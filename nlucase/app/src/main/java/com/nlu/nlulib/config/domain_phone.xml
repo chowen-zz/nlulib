@@ -1,0 +1,683 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nlu>
+
+	<rules name="video_not_a_calle_rule">
+		<rule>(播|放|打开).{0,5}?(视频|语音)</rule>
+	</rules>
+	
+	<validators>
+		<validator name="videoNotACallValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="video_not_a_calle_rule" />
+	</validators>
+
+	<rules name="phone_view_rule">
+		<rule><![CDATA[ (?<!(通话|语音))视频历史  ]]></rule>
+	</rules>
+	
+	<filters>
+		<filter name="phoneViewFilter" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="phone_view_rule" />
+	</filters>
+
+	<domain name="phone" type="external">
+		<!-- 未接来电 -->
+		<rules action="misscall">
+			<rule><![CDATA[  未接的?(来电|电话)  ]]></rule>
+			<rule><![CDATA[  (有没有)没接的?(来电|电话)  ]]></rule>
+			<rule><![CDATA[  有没接的?(来电|电话)[吗没不]  ]]></rule>
+			
+			<!-- 
+			<rule><![CDATA[  给我(视频|打.{0,2}电话).{0,2}[吗没不]  ]]></rule>
+			 -->
+			 
+			<!-- 有人/有谁 -->
+			<rule><![CDATA[  有[人谁](给我)?(视频|打.{0,2}电话|来电话?).*[吗没不]  ]]></rule>
+			<rule><![CDATA[  (都有|有没有)[人谁](给我)?(视频|打.{0,2}电话|来电话?)  ]]></rule>
+			
+			<rule><![CDATA[  (谁|哪些人)给我(打?(电话|通话)|来电)  ]]></rule>			
+			<rule><![CDATA[  (谁|哪些人)给?(呼).{0,2}我(电话|通话)?  ]]></rule>
+			<rule><![CDATA[  (哪些人|谁)给?呼叫?过我  ]]></rule>
+			
+			<rule><![CDATA[  .{1,7}有?给我打过电话吗  ]]></rule>
+			<rule><![CDATA[  .{1,7}给?呼叫?过我吗  ]]></rule>	
+			
+			<rule><![CDATA[  谁呼叫?过?我  ]]></rule>
+			
+			<rule><![CDATA[  谁来过电话 ]]></rule>
+			
+			<rule><![CDATA[  (谁|哪些人)给(打).{0,2}我(电话|通话)  ]]></rule>
+			
+			<rule><![CDATA[  有没有[人谁]给?我?打.{0,2}(电话|视频)  ]]></rule>
+			<rule><![CDATA[  (有(没有)?)[人谁]给?(打|呼[叫过].{0,2}).{0,2}我?(电话|视频)  ]]></rule>
+			<rule><![CDATA[  有(没有)?[人谁]来过.{0,2}(电话)  ]]></rule>
+			<rule><![CDATA[  (错过|没接)?.*(谁的|谁|哪些|那些|几个|多少个)给?我?打?(电话|视频)  ]]></rule>
+		</rules>
+		
+		<rules action="call_by_voice" match="false">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.{0,5}?)(视频|语音)?呼叫(一?下)?((我的?)?家里?人|一?个人)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(我的?)?家里?人((去|打|拨打|通|进行|聊)(一?[下个通])?)?(视频|语音)?(?:视频|语音|电话|通话|聊天).{0,1}$  ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音)([通电]话|聊天)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)[打拨通]一?[个通下]?(电)?话$   ]]></rule>	<!-- 这一段极端情况会匹配“通话”，所以要放在最后 -->	
+			
+			<!-- open和open_by_voice的rule是一样的，不同的地方只是open_by_voice多了一个callByVoiceValidator，丢弃所有带视频的输入，这是最简单的处理 -->
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="*" name="callByVoiceValidator" return="true" />
+		</rules>
+
+		<rules action="close_camera">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[(禁止|关闭|关掉|关)摄像头$ ]]></rule>
+			<rule><![CDATA[摄像头(禁止|关闭|关掉|关|关上)$ ]]></rule>
+
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?视频录制(开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="open_camera">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[(打开|开)摄像头$ ]]></rule>
+			<rule><![CDATA[摄像头(打开|开)$ ]]></rule>
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?视频录制(开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="call" match="false">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.{0,5}?)回?[打拨]一?[个通下]?电话$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)拨打一?[个通下]?电话$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)通一?[个下]?(电)?话$   ]]></rule>
+			<rule><![CDATA[   ^我[想要]通一?[个下]?(电)?话$   ]]></rule>							
+			<rule><![CDATA[   (?<who>.{0,5}?)(视频|语音)([通电]话)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)[打拨通]一?[个通下]?(电)?话$   ]]></rule>	<!-- 这一段极端情况会匹配“通话”，所以要放在最后 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)拨打一?[个通下]?电话$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)回?[打拨]一?[个通下]?电话$   ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="call" match="false">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.{0,5}?)(视频|语音)?呼叫(一?下)?((我的?)?家里?人|一?个人)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(我的?)?家里?人((去|打|拨打|通|进行|聊)(一?[下个通])?)?(视频|语音)?(?:视频|语音|电话|通话|聊天).{0,1}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<!-- 查看通话记录 --> 
+		<rules action="view" return_group="name">
+			<rule><![CDATA[   (?<who>.*?)(跳转?到|转到)?(语音|视频)?(?:视频|语音|电话|通话|聊天|来电|通讯)(记录|历史).{0,3}$   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(语音|视频)?(?:视频|语音|电话|通话|聊天|来电|通讯)(记录|历史).{0,3}$   ]]></rule>
+			
+			<!-- 把字句 -->
+			<rule><![CDATA[   (?<who>.*?)把?(语音|视频)?(?:视频|语音|电话|通话|聊天|来电|通讯)(记录|历史)([界页]面)?打开.{0,2}$   ]]></rule>
+			<filter name="phoneViewFilter"/>
+			<validator group="who" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name"/>
+		</rules>
+		
+		<!-- 查看通话记录 --> 
+		<rules action="view" return_group="name">
+		
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?.{0,2}?(跟|和|与|同)(?<name>.+?)(最近|刚[才刚])?的?(语音|视频)?(?:视频|语音|电话|通话|来电|通讯)(记录|历史).{0,2}$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?.{0,2}?(跟|和|与|同)(?<name>.+?)(最近|刚[才刚])?的?(语音|视频)聊天(记录|历史).{0,2}$    ]]></rule>
+		
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])?(给我)?的?(语音|视频)?(?:视频|语音|电话|通话|来电|通讯)(记录|历史).{0,2}$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])?(给我)?的?(语音|视频)聊天(记录|历史).{0,2}$    ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])(给我)?的?(语音|视频)?(?:视频|语音|电话|通话|来电|通讯).{0,3}$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])(给我)?的?(语音|视频)聊天.{0,3}$    ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])?(给我)?(打|拨|通)的(语音|视频)?(?:视频|语音|电话|通话|来电|通讯)(记录|历史).{0,2}$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])?(给我)?(打|拨|通)的(语音|视频)聊天(记录|历史).{0,2}$    ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])(给我)?(打|拨|通)的(语音|视频)?(?:视频|语音|电话|通话|来电|通讯).{0,3}$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?(?<name>.+?)(最近|刚[才刚])(给我)?(打|拨|通)的(语音|视频)聊天.{0,3}$    ]]></rule>
+			<filter name="messageFilter"/>
+			<filter name="phoneViewFilter"/>
+			<validator group="who" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name"/>
+		</rules>
+		
+		
+		<rules action="call_customer_service" return_group="name">
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(电话|手机(号码?)?|座机|固话|固定电话|号码)?客[服户]((工作)?人员)?$  ]]></rule>
+			
+			<!-- 回拨 -->
+			<rule><![CDATA[   (?<who>.*?)(?:回拨|打回)给?客[服户]((工作)?人员)?$  ]]></rule>
+			
+			<!-- 拨打/拨电话给XXX -->
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|打给|拨|打|给)(?:一?[下个通]?)(?:电话|视频)[给]客[服户]((工作)?人员)?$   ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX (这里不能有拨打的动作) [视频|语音]   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同|与)客[服户]((工作)?人员)?(?<![打|通|进行|拨打|拨].{0,4})(进行)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【打|通】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)客[服户]((工作)?人员)?(?:[打|通|进行|拨打|拨|聊])(一?[下个通]?|十?几分钟|两句)(?:视频|语音|电话|通话|话).{0,1}$  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)客[服户]((工作)?人员)?聊(一?[下个通]?|十?几分钟|两句).{0,2}$ ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【去】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)客[服户]((工作)?人员)?去(?:一?[下个通])(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (给|) XX  回   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)给客[服户]((工作)?人员)?回[复覆拨]?(一?[下个通]?)(视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)给客[服户]((工作)?人员)?回拨(一?[下个通]?)(视频|语音|电话|通话)?  ]]></rule>
+
+			<!-- (邀请|给|跟|和|与) XX  [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)客[服户]((工作)?人员)?(?:视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)客[服户]((工作)?人员)?(进行)?(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!--  拨打 XXX 电话 -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下通]?)客[服户]((工作)?人员)?的?(?:(视频)?电话)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:打(?![听开探发]))(?:一?[下通]?)客[服户]((工作)?人员)?的?(?:(视频)?电话)   ]]></rule>  <!-- 打字独立出来 -->
+			
+			<!-- 拨打XXX -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下]?)(?!(视频|语音|电话|通话)$)客[服户]((工作)?人员)?$   ]]></rule>
+			
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|打给)客[服户]((工作)?人员)?$  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)客[服户]((工作)?人员)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<filter name="messageFilter"/>
+		</rules>
+		
+		<!-- 带参数的open要放在前面 -->
+		<rules action="call_so_by_voice" return_group="name">
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(电话|手机(号码?)?|座机|固话|固定电话|号码)?(?<name>[\d]{3,})  ]]></rule>
+			
+			<!-- 拨打/拨电话给XXX -->
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|打给|拨|打|给)(?:一?[下个通]?)(?:电话|视频)[给](?<name>.+)   ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX (这里不能有拨打的动作) [视频|语音]   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同|与)(?<name>.+?)(?<![打|通|进行|拨打|拨|发送?].{0,3})(进行)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?<![打|通|进行|拨打|拨|发送?].{0,3})(进行)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【打|通】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(?<name>.+?)(?:[打|通|进行|拨打|拨|聊])(一?[下个通]?|十?几分钟)(?:视频|语音|电话|通话|话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?:[打|通|进行|拨打|拨|聊])(一?[下个通]?|十?几分钟)(?:视频|语音|电话|通话|话)  ]]></rule>
+
+			<!-- (邀请|给|跟|和|与) XX  [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同)(?<name>.+?)(?:视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【去】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(?<name>.+?)去(?:一?[下个通])(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (给|) XX  回   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)给(?<name>.+?)回[复覆拨]?(一?[下个通]?)(视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)给(?<name>.+?)回拨(一?[下个通]?)(视频|语音|电话|通话)?  ]]></rule>
+			
+			<!-- (邀请跟|和|与) XX  语聊 -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同)(?<name>.+?)语聊  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)语聊  ]]></rule>
+			
+			<!--  拨打 XXX 电话 -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:打(?![听开探发]))(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>  <!-- 打字独立出来 -->
+			
+			<!-- 拨打XXX -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下]?)(?!(视频|语音|电话|通话)$)(?<name>.+)   ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|打给)(?<name>.+)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(?<name>[\d]{3,})  ]]></rule>
+			
+			<!-- open和open_by_voice的rule是一样的，不同的地方只是open_by_voice多了一个callByVoiceValidator，丢弃所有带视频的输入，这是最简单的处理 -->
+			<validator group="*" name="callByVoiceValidator" return="true" />
+			<validator group="*" name="videoNotACallValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="name" name="contactNameValidator" return="false" />
+			<result_handler name="contactHandler" group="name"/>
+			<filter name="messageFilter"/>
+		</rules>
+		
+		<rules action="call_so" return_group="name">
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(电话|手机(号码?)?|座机|固话|固定电话|号码)?(?<name>[\d]{3,})  ]]></rule>
+			
+			<!-- 回拨 -->
+			<rule><![CDATA[   (?<who>.*?)(?:回拨|打回)给?(?<name>.+)  ]]></rule>
+			
+			<!-- 拨打/拨电话给XXX -->
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|打给|拨|打|给)(?:一?[下个通]?)(?:电话|视频)[给](?<name>.+)   ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX (这里不能有拨打的动作) [视频|语音]   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同|与)(?<name>.+?)(?<![打|通|进行|拨打|拨].{0,4})(进行)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(邀)?请(?<name>.+?)(?<![打|通|进行|拨打|拨].{0,4})(进行)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【打|通】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(?<name>.+?)(?:[打|通|进行|拨打|拨|聊])(一?[下个通]?|十?几分钟)(?:视频|语音|电话|通话|话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?:[打|通|进行|拨打|拨|聊])(一?[下个通]?|十?几分钟)(?:视频|语音|电话|通话|话)  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【去】   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同)(?<name>.+?)去(?:一?[下个通])(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (给|) XX  回   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)给(?<name>.+?)回[复覆拨]?(一?[下个通]?)(视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)给(?<name>.+?)回拨(一?[下个通]?)(视频|语音|电话|通话)?  ]]></rule>
+
+			<!-- (邀请|给|跟|和|与) XX  [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同|给)(?<name>.+?)(?:视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!--  拨打 XXX 电话 -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:打(?![听开探发]))(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>  <!-- 打字独立出来 -->
+			
+			<!-- 拨打XXX -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下]?)(?!(视频|语音|电话|通话)$)(?<name>.+)   ]]></rule>
+			
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|打给)(?<name>.+)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(?<name>[\d]{3,})  ]]></rule>
+			<validator group="name" name="contactNameValidator" return="false" />
+			<validator group="*" name="videoNotACallValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name"/>
+			<filter name="messageFilter"/>
+		</rules>
+		
+		
+		<rules action="emergency_call" match="false">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.*?)紧急呼叫$   ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+	</domain>
+
+	<domain name="phone" type="internal">
+
+		<rules action="cancel" depend="phone.out" priority="9">
+			<rule><![CDATA[   ^关[了啦掉]$  ]]></rule>
+			<rule><![CDATA[   ^不是(打给|拨打|呼叫)?他的?.{0,2}$  ]]></rule>
+			<rule><![CDATA[   ^我?(好像是?|似乎|像是)?(打|拨打|呼叫)?错了.{0,2}$  ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,2}?)(打|呼叫)错人?(?<what>.{0,2}?)$  ]]></rule>
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="negativeValidator" return="false" />
+		</rules>
+		
+		<rules action="cancel" depend="phone.out" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(关[了啦掉]吧?|挂[了啦掉断]吧?|取消|[不别][想要]?[打][了啦]?)(?<what>.{0,3}?)$  ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(放弃)(?<what>.{0,3}?)$  ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(不[想要]?|别)[给和跟同与](?<what>.{0,5}?)(打|呼叫?)?(视频|语音|电话|通话)?.{0,3}$  ]]></rule>
+			<rule><![CDATA[   ^(不[想要]?|别)(打|呼叫?)(?<what>.{0,5}?)的?(视频|语音|电话|通话).{0,3}$  ]]></rule>
+			<rule><![CDATA[  ^(?<how>.{0,3}?)不[和跟同与][他她]聊.{0,2}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="negativeValidator" return="false" />
+		</rules>
+			
+		<rules action="cancel" depend="phone.out" priority="9">
+			<rule ref="replace_statement_rule" />	
+			<rule><![CDATA[  ^我?不[想要]?[打聊说]了?$  ]]></rule>
+			<rule><![CDATA[  ^(退出|结束|取消|关闭)(呼叫|拨打)?$  ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:挂断|挂掉|取消|结束|中止|断[掉了]|退出)(视频|语音|电话|通话|呼叫)?$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)把?(视频|语音|电话|通话|呼叫)(?:挂断|挂[了掉]|取消|结束|中止|断[掉了]|退出).{0,1}$  ]]></rule>
+			<rule><![CDATA[   ^我?(不(要?|想要?)|取消|别)(接听|呼叫|拨打?|打)(视频|语音|电话|通话)?$  ]]></rule>
+			<rule><![CDATA[   ^我?(不[想要]?|别)[打接听聊](视频|语音|电话|通话)?$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(结束|停掉|退出)(视频|语音|电话|通话)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="negativeValidator" return="false" />
+		</rules>
+	
+		
+		<rules action="reject" depend="phone.in" priority="9">
+			<rule><![CDATA[   ^关[了啦掉]$  ]]></rule>
+		</rules>
+		
+		<rules action="reject" depend="phone.in" priority="9">
+			<!-- 把字句 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)把?(视频|语音|电话|通话|呼叫|来电)(挂[断了啦掉]|拒[掉接绝听了]|断[掉开了]|关[了闭掉]|取消|结束|中止|退出).{0,1}$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)[把这](?<what>.{0,5}?)(视频|语音|电话|通话|呼叫|来电|[它他她])(挂[断了啦掉]|拒[掉接绝听了]|断[掉开了]|关[了闭掉]|取消|结束|中止|退出).{0,1}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="reject" depend="phone.in" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(关[了啦掉]吧?|挂[了啦掉断]吧?|取消|[不别][想要]?[打接][了啦])(?<what>.{0,3}?)$  ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(放弃|停掉)(?<what>.{0,3}?)$  ]]></rule>
+			
+			<rule><![CDATA[  ^(退出|结束|取消|关闭|忽略|切勿)(接[听通受收]|呼叫|拨打)?.{0,3}(视频|语音|电话|通话)?$  ]]></rule>
+			
+			<!-- 主动句式 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(挂[断了啦掉]|拒[掉接绝听了]|断[掉开了]|关[了闭掉]|取消|结束|中止|退出).{0,3}(视频|语音|电话|通话|呼叫|来电)?$  ]]></rule>
+			
+			<!-- 否定句式 -->
+			<rule><![CDATA[  ^我?不[想要]?[打聊说]了?$  ]]></rule>
+			
+			<rule><![CDATA[   ^(?<act>.{0,5}?)(接听|呼叫|拨打)$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)[跟与同和][他她][聊说谈].{0,2}$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)[给和跟同与](?<what>.{0,5}?)[打聊](视频|语音|电话|通话)?.{0,3}$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)[给和跟同与](?<what>.{0,5}?)(进行|打|聊)?(视频|语音|电话|通话|说话).{0,3}$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)(接听?|听)(?<what>.{0,5}?)的?(视频|语音|电话|通话).{0,3}$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)(接[听通受收]|呼叫|拨打?|打)(视频|语音|电话|通话)?$  ]]></rule>
+			<rule><![CDATA[   ^(?<act>.{0,5}?)[打接听聊](视频|语音|电话|通话|来电)?$  ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="negativeValidator" return="false" />
+			
+			<validator group="act" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="accept" depend="phone.in" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(不错|没错|可以|没[有]?问题|同意)$ ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,6}?)(可以|同意)?(通话|接听)$ ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,6}?)(连接|接通)(视频|电话|通话)?$ ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,6}?)聊(一[下会]|会|聊).{0,2}$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+		
+		<rules action="accept" depend="phone.in" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  ^(?<who>.*?)(打开|进入|切换)?视频(模式|[通对]话|聊天)的?(模式|状态)?$ ]]></rule>
+			<rule><![CDATA[  ^(?<who>.*?)([换转切]换?[为成回]|[采使]用)视频([通对]话|聊天)?的?(模式|状态)?$  ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,6}?)([使采]?用)?视频的?(模式|[方办]法|状态)?.{0,1}(接(?:通|一?下|听|受|收)?)   ]]></rule>
+			<rule><![CDATA[  ^我?只(想要?|要)(视频([通对]话|聊天))的?(模式|状态)?([通对]话|聊天)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="accept_by_voice" depend="phone.in" priority="9">
+			<rule><![CDATA[   ^接(?:通|一?下|听|受|收)?语音   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,6}?)用?语音的?(模式|[方办]法|状态)?.{0,1}(接(?:通|一?下|听|受|收)?)   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,6}?)用?语音的?(模式|[方办]法|状态)  ]]></rule>
+			<rule ref="replace_statement_rule" />
+			<filter name="discardNegativeInput" />
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+		
+		<rules action="accept" depend="phone.in" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^用?视频的?([模方][式法]|状态)?.{0,1}接(?:通|一?下|听|受|收)?   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,6}?)接(?:通|一?下|听|受|收)?(?<what>.{0,4})(?:视频|电话)?   ]]></rule>
+			<rule><![CDATA[   ^(好|是|可以|Yes|YES|yes|连(接|[上一下吧]{1,2}))$ ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,6}?)连接?[上一下吧]{1,2}.{0,2}$  ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.{0,6}?)(连[接上]?|接[上]?)(?<what>.{0,4})(视频(电话|通话)?|语音(电话|通话)?|电话|通话)?$ ]]></rule>
+			<rule ref="replace_statement_rule" />
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="what" name="negativeValidator" return="false" />
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="invite" return_group="name" depend="phone.calling, phone.calling_invite" priority="9">
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[   (?<who>.{0,5}?)(拨打?|打)一?[个通下]?电话$   ]]></rule>
+			
+			<!-- 拨打/拨电话给XXX -->
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|打给|拨|打|给)(?:一?[下个通]?)(?:电话|视频)[给](?<name>.+)   ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX (这里不能有拨打的动作) [视频|语音]   [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同|拉|叫)(?<name>.+?)(?<![打|通|进行|拨打|拨].{0,2})(进[行来])?(一起)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?<![打|通|进行|拨打|拨].{0,2})(进[行来])?(一起)?(视频|语音)(?:电话|通话)?  ]]></rule>
+			
+			<!-- 邀请XX加入通话   	备注:此规则一定要放在下一条之前 -->
+			<rule><![CDATA[   (?<who>.*?)(拉)(?<name>.+?)(加(入|进来)|一起来?|进来|来|[跟和与同]我)(?:视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(加(入|进来)|一起来?|进来|来|[跟和与同]我)(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  【打|通】   [电话|通话]       备注：这条规则在android居然能匹配上“邀请XX加入通话”的句式，有点问题 -->  
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同|拉|叫)(?<name>.+?)(?:[打|通|进行|拨打|拨])(?:一?[下个通]?)(?:视频|语音|电话|通话|话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(?:[打|通|进行|拨打|拨])(?:一?[下个通]?)(?:视频|语音|电话|通话|话)  ]]></rule>
+
+			<!-- (邀请|给|跟|和|与) XX  [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(跟|和|与|同|拉|叫)(?<name>.+?)(一起)?(?:视频|语音|电话|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(一起)?(?:视频|语音|电话|通话)  ]]></rule>
+			
+			<!-- (邀请|给|跟|和|与) XX  [电话|通话] -->
+			<rule><![CDATA[   (?<who>.*?)(给|跟|和|与|同|拉|叫)(?<name>.+?)(进来?)?(聊((会儿?)?天|聊|一?下))  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)((邀)?请)(?<name>.+?)(进来?)?(聊((会儿?)?天|聊|一?下))  ]]></rule>
+			
+			<!-- 把字句 -->
+			
+			<!--  拨打 XXX 电话 -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:打(?![听开探发]))(?:一?[下通]?)(?<name>.+?)的?(?:(视频)?电话)   ]]></rule>  <!-- 打字独立出来 -->
+			
+			<!-- 拨打XXX -->
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|拨|接通)(?:一?[下]?)(?!(视频|语音|电话|通话)$)(?<name>.+)   ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|打给)(?<name>.+)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(视频|语音|电话)?(?:呼叫|拨打|打|拨|接通)(?<name>[\d]{3,})  ]]></rule>
+			<validator group="name" name="contactNameValidator" return="false" />
+			<validator group="*" name="videoNotACallValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name"/>
+		</rules>
+		
+		<rules action="invite" match="false" depend="phone.calling, phone.calling_invite" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<who>.{0,7}?)拨打一?[个通下]?电话$   ]]></rule>	
+			<rule><![CDATA[   ^(?<who>.{0,7}?)[打拨]一?[个通下]?电话$   ]]></rule>						
+			<rule><![CDATA[   ^(?<who>.{0,7}?)(想|要|可以)(视频|语音)(通话)$   ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />			
+		</rules>
+		
+		<rules action="invite" return_group="name" depend="phone.calling, phone.calling_invite">
+			<rule><![CDATA[ (?<action>.*?)把(?<name>.+?)(加|拉|邀?请)(?:进来?|入)?(?:一起)?(?=(?:视[一个下]{0,2}频|[打通][一个通下]{0,3}(电)?话|语[一个下]{0,2}音|通[一个下]{0,2}话)|(?!.)) ]]></rule>
+
+			<rule><![CDATA[  (?<action>.*?)(加|拉|喊|让|叫)(?<name>.+?)加?(?:进来?|入)?(?:一起)?(?=(?:视[一个下]{0,2}频|[打通][一个通下]{0,3}(电)?话|语[一个下]{0,2}音|通[一个下]{0,2}话)|(?!.))  ]]></rule>
+
+			<rule><![CDATA[  (?<action>.*?)请.*?(?<action1>[不要别]*?)[拉喊让](?<name>.*?)(?:加|一起)?(?:进来?|入)?(?=(?:视[一个下]{0,2}频|[打通][一个通下]{0,3}(电)?话|语[一个下]{0,2}音|通[一个下]{0,2}话)|(?!.)) ]]></rule>
+			<rule><![CDATA[  (?<action>.*?)请.*?(?<action1>[不要别]*?)[拉喊让]?(?<name>.*?)(?:加|一起)?(?:进来?|入)?(?=(?:视[一个下]{0,2}频|[打通][一个通下]{0,3}(电)?话|语[一个下]{0,2}音|通[一个下]{0,2}话)|(?!.)) ]]></rule>
+			<validator group="action" name="negativeValidator" return="false" />
+			<validator group="action1" name="negativeValidator" return="false" />
+			<validator group="action" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name" />
+		</rules>
+	
+		<rules action="voice_mode" priority="9" depend="phone.calling, phone.out, phone.calling_invite" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.{0,5}?)语音?聊(会儿?|一会儿?)$   ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)(打开|进入|开启|启动)?语音(模式|[通对]话|聊天)的?(模式|状态)?$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(打开|进入)?语聊的?(模式|状态)$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)([换转切]换?[为成回]|[采使]用)语音([通对]话|聊天)?的?(模式|状态)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)([换转切]换?[为成回]|[采使]用)(语聊|无画面)的?(模式|状态)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)关.{0,2}(画面)  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(画面)关[闭掉了]$  ]]></rule>
+			<rule><![CDATA[  ^我?不想?要视频的?模式$  ]]></rule>
+			<rule><![CDATA[  ^我?不想要?视频的?模式$  ]]></rule>
+			<rule><![CDATA[  ^我?只想要?(语聊|语音([通对]话|聊天))的?(模式|状态)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			
+		</rules>
+		
+		<rules action="video_mode" priority="9" depend="phone.calling, phone.out, phone.calling_invite" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<who>.{0,5}?)视频聊(会儿?|一会儿?)$   ]]></rule>
+			
+			<rule><![CDATA[  ^(?<who>.*?)(打开|进入|开启|启动)?视频(模式|[通对]话|聊天)的?(模式|状态)?$ ]]></rule>
+			<rule><![CDATA[  ^(?<who>.*?)([换转切]换?[为成回]|[采使]用)视频([通对]话|聊天)?的?(模式|状态)?$  ]]></rule>
+			<rule><![CDATA[  ^(?<who>.*?)([换转切]换?[为成回]|[采使]用)(有画面)的?(模式|状态)?$  ]]></rule>
+			<rule><![CDATA[  ^(?<who>.*?)打?开.{0,2}(画面|视频)$ ]]></rule>
+			<rule><![CDATA[  ^(?<who>.*?)(画面|视频)打?[开]$  ]]></rule>
+			<rule><![CDATA[  ^我?不想?要语[音聊]的?模式$  ]]></rule>
+			<rule><![CDATA[  ^我?不想要?语[音聊]的?模式$  ]]></rule>
+			<rule><![CDATA[  ^我?只想要?(视频([通对]话|聊天))的?(模式|状态)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="mic_off" priority="9">
+			<rule><![CDATA[  (?<who>.*?)(打开)?静音$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(打开)?静音(一会儿?|一?下)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把.{0,3}静音$  ]]></rule>
+			<rule><![CDATA[  (?<how>.*?)静(会儿?|一?下)音$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(麦(克[风疯])?|话筒).{0,2}静音$  ]]></rule>	
+			<!-- 
+			<rule><![CDATA[  (?<who>.*?)(关掉|关闭|关了)(声音|音量)]]></rule>
+			<rule><![CDATA[ (声音|音量)(?<how>.*?)关(了|掉|闭)]]></rule>
+			 -->
+			 
+			<!-- 打开mic的否定句式 -->
+			<rule><![CDATA[  (?<act>.*?)打?开.{0,2}麦(克[风疯])?  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)麦(克[风疯]?)?打开 ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)打?开(我的?)?话筒  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)(我的?)?话筒.{0,2}打?开(一[下会]?)?.{0,2}$  ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="act" name="negativeValidator" return="true" />		
+		</rules>
+		
+		<rules action="mic_off">		
+		
+			<rule><![CDATA[  关[了掉闭]?.{0,2}麦(克[风疯])?  ]]></rule>
+			<rule><![CDATA[  麦(克[风疯]?)?关[了掉闭]? ]]></rule>
+			<rule><![CDATA[  关[了掉闭]?(我的?)?话筒  ]]></rule>
+			<rule><![CDATA[  (我的?)?话筒.{0,2}关([了掉闭下]|一[下会])?  ]]></rule>
+			<rule><![CDATA[  把(我的?)?麦(克[风疯]?)?关[了掉闭]?  ]]></rule>
+			<rule><![CDATA[  把(我的?)?话筒关[了掉闭]?  ]]></rule>		
+			
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="mic_on" priority="9">
+		<!-- 关闭mic的否定句式 -->
+			<rule><![CDATA[  (?<act>.*?)(打开)?静音$  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)(打开)?静音(一会儿?|一?下)$  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)把.{0,3}静音$  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)静(会儿?|一?下)音$  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)(麦(克[风疯])?|话筒).{0,2}静音$  ]]></rule>	
+			
+			<!-- 取消匹配音量相关规则
+			<rule><![CDATA[  (?<act>.*?)(关掉|关闭|关了)(声音|音量)]]></rule>
+			-->
+			
+			<rule><![CDATA[  (?<who>.*?)打?开.{0,2}麦(克[风疯])?  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)麦(克[风疯]?)?打开 ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)打?开(我的?)?话筒  ]]></rule>
+			<rule><![CDATA[  (?<how>.*?)(我的?)?话筒.{0,2}打?开(一[下会]?)?.{0,2}$  ]]></rule>
+			<rule><![CDATA[  把(我的?)?麦(克[风疯]?)?打开  ]]></rule>
+			<rule><![CDATA[ (?<who>.*?)(关掉|关闭|取消|关了|不要|不|结束|停止|退出)静音]]></rule>
+			<!-- 取消匹配音量相关规则
+			<rule><![CDATA[ (?<who>.*?)(打开|开|恢复)(声音|音量)]]></rule>
+			<rule><![CDATA[ (声音|音量)(?<how>.{0,2})(打开)]]></rule>
+			 -->
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false"/>
+			<validator group="act" name="negativeValidator" return="true" />		
+		</rules>
+		<rules action="mic_on">
+			<rule><![CDATA[  打开麦(克[风疯])?  ]]></rule>
+			<rule><![CDATA[  打开话筒?  ]]></rule>
+			<rule><![CDATA[  把麦(克[风疯])?打?开  ]]></rule>
+			<rule><![CDATA[  把话筒打?开  ]]></rule>
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="record_stop" depend="phone.calling, phone.calling_invite" >
+			<rule><![CDATA[  ^我?不[要想]?录.{0,1}[了啦]$  ]]></rule>
+		</rules>
+		
+		<rules action="record_stop" depend="phone.calling, phone.calling_invite" >
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[  (?<who>.*?)录[像相制播屏](结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了]?)$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])录[像相制播屏]$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])录[像相制播]?(视频|画面)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])(视频|画面)录[像相制播]$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)(视频|画面)?录[像相制播](结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了]?)$  ]]></rule>	
+			
+			<!-- record_start的否定句式 -->
+			<rule><![CDATA[  (?<act>.*?)录一?[个下]?(视频|画面|像|相|屏)?  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)录[制播]?一?[个下]?(视频|画面|通话(视频)?)  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)把(视频|画面|通话(视频)?)录[制播]?(下来?|好|一?下)  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)录[制播像象屏](开始)?  ]]></rule>
+					
+			<validator group="who" name="IWantValidator" return="true" />
+			
+			<validator group="act" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="record_start" depend="phone.calling, phone.calling_invite" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)录一?[个下]?(视频|画面|像|相|屏)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)录[制播]?一?[个下]?(视频|画面|通话(视频)?)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把(视频|画面|通话(视频)?)录[制播]?(下来?|好|一?下)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)录[制播像象屏](开始)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="cancel_invited_calling" depend="phone.calling_invite" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)[挂停][断|掉]$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)断[开|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止了掉]|退出)(通话|视频|远程)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)[关挂][了|掉]$  ]]></rule>	
+			<rule><![CDATA[  (?<who>.*?)中断$  ]]></rule>
+			<rule> <![CDATA[ ^(再见|拜拜)[了啦]?$  ]]></rule>
+			<rule><![CDATA[  ^我?不[想要]?[打聊说]了?$  ]]></rule>
+			<rule><![CDATA[  ^(退出|结束|取消)$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="cancel" depend="phone.calling, phone.out" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)[挂停][断|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)断[开|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)(结束|停[止了掉]|退出|断[开掉]|挂[断掉了]|关[了掉闭])(通话|视频(通话|语音|聊天|电话)?|远程|电话|聊天|它)$  ]]></rule>
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)把?(通话|视频(通话|语音|聊天|电话)?|远程|电话|聊天|它)(结束|停[止了掉]|退出|断[开掉]|挂[断掉了]?|关[了掉闭]?)$  ]]></rule>
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)[关挂][了|掉]$  ]]></rule>	
+			<rule><![CDATA[  (快|赶[紧快])?(?<who>.*?)中断$  ]]></rule>
+			<rule> <![CDATA[ ^(再见|拜拜)[了啦]?$  ]]></rule>
+			<rule><![CDATA[  ^我?不[想要]?[打聊说]了?$  ]]></rule>
+			<rule><![CDATA[  ^(退出|结束|取消|关闭)$  ]]></rule>
+			<rule><![CDATA[  ^(通话|视频|电话)聊完了?$  ]]></rule>
+			<rule><![CDATA[  ^.{0,2}不跟[他她]聊.{0,2}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="cancel" depend="phone.calling, phone.out" priority="9">
+			<rule><![CDATA[  ^(挂了)$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="cancel" depend="phone.call, phone.call_by_voice" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)[挂停][断|掉]$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)断[开|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止了掉]|退出)(通话|视频|拨打)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)[关挂][了|掉]$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)中断$  ]]></rule>
+			<rule> <![CDATA[ ^(再见|拜拜)[了啦]?$  ]]></rule>
+			<rule><![CDATA[  ^我?不[想要]?[打聊说]了?$  ]]></rule>
+			<rule><![CDATA[  ^(退出|结束|取消|返回)$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		<!-- 
+		<rules action="cancel">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  ^不[想要]?[打聊说]了$  ]]></rule>
+		</rules>
+		 -->
+		 
+		<rules action="choice" priority="8" depend="phone.call, phone.call_by_voice, phone.calling_invite">
+			<rule ref="cmd_choise_match_rule"/>
+			<rule ref="cmd_choise_find_rule"/>
+		</rules>
+		
+		
+		
+		<!-- 匹配整串字符串时，group设为* 当组不存在的时候，默认是当成validate正常通过 -->
+		<rules action="input" return_group="name" depend="phone.call, phone.call_by_voice, phone.calling_invite" priority="100">
+			<rule><![CDATA[ (?<who>.*?)(打(个|一[个下])?)?(电话)?给(?<name>.+) 	]]></rule>
+			<rule><![CDATA[ (?<who>.*?)呼叫(?<name>.+) 	]]></rule>
+			<rule><![CDATA[ (?<who>.*?)邀请(?<name>.+)通话 	]]></rule>
+			<rule><![CDATA[ (?<name>.+) ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="who" name="negativeValidator" return="false" />
+			<result_handler name="contactHandler" group="name" />
+		</rules>
+	</domain>
+</nlu>

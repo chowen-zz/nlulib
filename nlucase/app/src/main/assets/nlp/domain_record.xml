@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<domain name="record" type="external">
+	
+		<rules action="start">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)录一?[个下]?(视频|画面|像|相|屏)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)录[制播]?一?[个下]?(视频|画面)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把(视频|画面)录[制播]?(下来?|好|一?下)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)录[制播像象屏](开始|打开)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="start">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?录([一几]?[个张下])?[象像相](开启|启动|开始)?.{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?录制?([一几]?[个下])?(视频)(开启|启动|开始)?.{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?录制(开启|启动|开始)?.{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|进入|开始)?视频录制(开启|启动|开始)?.{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(打开|开启|启动|开始)?录我(开启|启动|开始|打开)?$   ]]></rule>
+
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="start">
+			<rule><![CDATA[  (?<who>.*?)录[制播像象屏]?吧$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<filter name="discardNegativeInput" />
+		</rules>
+
+	</domain>
+	
+	<domain name="record" type="internal">
+	
+		<rules action="stop">
+			<rule><![CDATA[  ^我?不[要想]?录.{0,1}[了啦]$  ]]></rule>
+			<rule><![CDATA[  ^((停(止|下来?)?)|暂停(一?下)?|结束|中止|退[出掉了]|取消|关[掉闭了])[吧啊]?$  ]]></rule>
+		</rules>
+		
+		<rules action="stop" >
+			<rule ref="replace_statement_rule" />
+			
+			<rule><![CDATA[  (?<who>.*?)录[像相制播屏](结束|停[止掉了]?|暂停|退[出掉]|取消|中止|走开|关[掉闭了]?)$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])录[像相制播屏]$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])录[像相制播]?(视频|画面)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了])(视频|画面)录[像相制播]$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)(视频|画面)?录[像相制播](结束|停[止掉了]?|暂停|退[出掉]|取消|中止|关[掉闭了]?)$  ]]></rule>	
+			
+			<!-- record_start的否定句式 -->
+			<rule><![CDATA[  (?<act>.*?)录一?[个下]?(视频|画面|像|相|屏)?  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)录[制播]?一?[个下]?(视频|画面|通话(视频)?)  ]]></rule>
+			<rule><![CDATA[  (?<act>.*?)录[制播像象屏](开始)?  ]]></rule>
+					
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="act" name="negativeValidator" return="true" />
+		</rules>
+		
+		
+		<rules action="restart">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(重新?|再(来|给我)?)(取消|开启|启动|开始)?录([一几]?[个张下]|该|这个?)?[象像相].{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(重新?|再(来|给我)?)(取消|开启|启动|开始)?录制?([一几]?[个下]|该|这个?)?(视频).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(重新?|再(来|给我)?)(取消|开启|启动|开始)?录制?.{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,8}?)(重新?|再(来|给我)?)(取消|开启|启动|开始)?视频录制.{0,1}$   ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<!--<rules action="start">-->
+			<!--<rule ref="replace_statement_rule" />-->
+			<!--<rule><![CDATA[  (?<who>.*?)录一?[个下]?(视频|画面|像|相|屏)$  ]]></rule>-->
+			<!--<rule><![CDATA[  (?<who>.*?)录[制播]?一?[个下]?(视频|画面)$  ]]></rule>-->
+			<!--<rule><![CDATA[  (?<who>.*?)把(视频|画面)录[制播]?(下来?|好|一?下)$  ]]></rule>-->
+			<!--<rule><![CDATA[  (?<who>.*?)录[制播像象屏](开始)?$  ]]></rule>-->
+			<!--<rule><![CDATA[  (?<who>.*?)开录$  ]]></rule>-->
+			<!--<validator group="who" name="IWantValidator" return="true" />-->
+			<!--<filter name="discardNegativeInput" />-->
+		<!--</rules>-->
+		<!---->
+		<!--<rules action="start">-->
+			<!--<rule><![CDATA[  (?<who>.*?)录[制播像象屏]?吧$  ]]></rule>-->
+			<!--<validator group="who" name="IWantValidator" return="true" />-->
+			<!--<filter name="discardNegativeInput" />-->
+		<!--</rules>-->
+		<!---->
+		<!--<rules action="start">-->
+			<!--<rule ref="replace_statement_rule" />-->
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(开启|启动|进入|开始)?录([一几]?[个张下])?[象像相](开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(开启|启动|进入|开始)?录制?([一几]?[个下])?(视频)(开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(开启|启动|进入|开始)?录制(开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<!---->
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(开启|启动|进入|开始)?视频录制(开启|启动|开始)?.{0,1}$   ]]></rule>-->
+			<!---->
+			<!--<rule><![CDATA[   ^(?<who>.{0,8}?)(开启|启动|开始)?录我(开启|启动|开始)?$   ]]></rule>-->
+			<!---->
+			<!--<validator group="who" name="IWantValidator" return="true" />-->
+		<!--</rules>-->
+	</domain>
+</nlu>

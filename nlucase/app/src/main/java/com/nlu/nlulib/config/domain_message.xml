@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<domain name="message" type="external">
+		<!-- 未读留言 -->
+		<!-- 打开XX的聊天界面 -->
+		<rules action="open_chat_ui" return_group="name"  priority="9">		
+			<rule ref="replace_statement_rule" />
+			<!-- 打开xx的聊天界面 -->			
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(打开|进入|转到|跳转?到)(一?下)?(跟|和|与|同)?(?<name>.+?)的?(?<!(语音|视频).{0,4})聊天[界页]面{0,2}?$  ]]></rule>
+			
+			<rule><![CDATA[   (?<who>.*?)(?:[查看]?看|浏览|打开)一?下?.{0,2}?(跟|和|与|同)(?<name>.+?)(最近|刚[才刚])?的?(?<!(语音|视频).{0,4})聊天([界页]面|信息|消息|历史|记录).{0,2}$    ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,5}?)[查看]?看(一?下)?(?<name>.+?)(发[过来]?)?的?(?<!(语音|视频).{0,4})聊天([界页]面|信息|消息|历史|记录){0,2}?$  ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,5}?)[查看]?看(一?下)?(?<name>.+?)(发[过来]?)?的?历史(聊天)?(留言|信息|消息|记录){0,2}?$  ]]></rule>  
+			
+			
+			
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看]|看)一?下?(跟|和|与|同)?(?<name>.+?)(给我)?发过的(语音)?(留言|信息|消息|短信|语音|话).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看]|看)一?下?(跟|和|与|同)?(?<name>.+?)[之以]前(给我)?(发过?的)(语音)?(留言|信息|消息|短信|语音|话).{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<who>.{0,5})[查看]?看(一?下)?(跟|和|与|同)(?<name>.+?)(发的)?的?(?<!(语音|视频).{0,4})聊天([界页]面|信息|消息|历史|记录){0,2}?$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看]|看)一?下?(跟|和|与|同)(?<name>.+?)(给我)?发过的(语音)?(留言|信息|消息|短信|语音|话).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看]|看)一?下?(跟|和|与|同)(?<name>.+?)[之以]前(给我)?(发过?的)(语音)?(留言|信息|消息|短信|语音|话).{0,1}$   ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />	
+			<result_handler name="contactHandler" group="name" chain="true"/>
+		</rules>
+		
+		<!-- 留言的优先级必须要高于phone.call，phone.call_so, phone.call_so_by_voice的优先级，以解决 “语音” 一词带来的歧义问题 -->
+		<!-- 查看xx的留言 -->
+		<rules action="view" return_group="name"  priority="9">
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看阅]|读|播放?|报|说|看)一?下?([昨前今\d][天日][前后]?的?)?(未读)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>	
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看阅]|读|播放?|报|说|看)一?下?([昨前今\d][天日][前后]?的?)?(未读)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>		
+				
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看阅]|读|播放?|报|说|看)一?下?(?<name>.+?)(给我发?|发)的(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看阅]|读|播放?|报|说|看)一?下?(?<name>.+?)(给我)?(留|回)的(?:言|话|信).{0,3}?$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:查[看阅]|读|播放?|报|说|看)一?下?(?<name>.+?)的(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音).{0,1}$  ]]></rule>
+			<!-- 把字句 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)把?(?<name>.+?)((给我发?|发)的?)?(未读|没读过?的|新的?)?的?(语音)?(留言|信息|消息|短信|语音)(给我)?(?:读|播放?|报|说)一?下?((给我)(听一?下?)?)?.{0,2}$   ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />			
+			<result_handler name="contactHandler" group="name"/>
+		</rules>
+		
+		
+		<rules action="view"  priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<who>.{0,5}?)((查[看阅]|读|播放?|报|说|看)(一?下)?|有什么)?(.{0,6}?的?)还?(未读|没读过?的|新的?)(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)((查[看阅]|读|播放?|报|说|看)(一?下)?|有什么)?(.{0,6}?的?)还?(未读|没读过?的|新的?)(语音)(留言|信息|消息|短信|语音)?.{0,1}$   ]]></rule>
+			
+			<!-- 问句 -->
+			<rule><![CDATA[   ^(?<how>.{0,3}?)有(给?(我的)?)(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)[吗么]$   ]]></rule>
+			<rule><![CDATA[   ^我(?<how>.{0,3}?)有(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)[吗么]$   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)我有(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)[吗么]$   ]]></rule>
+			
+			<rule><![CDATA[   ^我?(?<how>.{0,3}?)有?(收到)(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)[了啦]?[吗么]$   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)我有?(收到)(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)[了啦]?[吗么]$   ]]></rule>
+			
+			<!-- 有没有 -->
+			<rule><![CDATA[   ^(?<how>.{0,3}?)有没有(给?(我的)?)(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^我(?<how>.{0,3}?)有没有(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)我有没有(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音).{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(都(有谁)?|有人|有|谁)给我[留发][了的]?.{0,3}(语音)?(言|话|信息|消息|留言|短信|语音).{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(?<how>.{0,3}?)有没有(谁|人)给我[留发]了?(语音)?(言|话|信息|消息|语音).{0,1}$   ]]></rule>
+			
+			<rule><![CDATA[   ^(?<how>.{0,3}?)(未读|没读过?的|新的?)?(语音)?(留言|信息|消息|短信|语音)都有(啥|什么).{0,1}$   ]]></rule>
+			
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />	
+		</rules>
+		
+		<rules action="open" match="false"  priority="7">
+		<rule ref="replace_statement_rule" />
+			<!-- 主动陈述 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)(发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)?(语音|留言|信息|消息|短信|话)([然随之]后)?(马上|立[刻即])?给((我的?)?家里?人|他)(发过去)?$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)给((我的?)?家里?人|他)(发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)?(留言|信息|消息|短信|话)$   ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+		</rules>
+		
+		<!-- 留言的优先级必须要高于phone.call，phone.call_so, phone.call_so_by_voice的优先级，以解决 “语音” 一词带来的歧义问题 -->
+		
+		<rules action="mailto" return_group="name" priority="8">		
+			<rule ref="replace_statement_rule" />
+			<!--  发送个 【 留言|信息|消息|短信】 给XXX -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(?:发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(留言|信息|消息|短信)给(?<name>.+)   ]]></rule>
+
+			<!--  给XXX 发送 【 留言|信息|消息|短信】 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)(?:发|发送|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)?(留言|信息|消息|短信).{0,3}?$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)(?:发|发送|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)(留言|信息|消息|短信)?.{0,3}?$  ]]></rule>
+			
+			<!-- 给XXX 留个 【言|话|信】 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)(留|回|发)[几一]?[个条段]?(言|话|信).{0,3}?$  ]]></rule>
+			
+			<!-- 给XXX 录个 【语音】 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)录[几一]?[个条段]?(语音)?(留言|信息|消息|短信).{0,3}?$  ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)录[几一]?[个条段]?(语音)(留言|信息|消息|短信)?.{0,2}?$  ]]></rule>
+			
+			<!--  发条语音给列表中第N个人 -->
+			<rule><![CDATA[  ^(?<who>.{0,5}?)(?:发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)?(留言|信息|消息|短信)(发送?)?给.{0,3}?中?(?<name>.+)   ]]></rule>
+			<rule><![CDATA[  ^(?<who>.{0,5}?)(?:发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?语音(留言|信息|消息|短信)?(发送?)?给.{0,3}?中?(?<name>.+)   ]]></rule>
+			
+			<!--  录段话给列表中第N个人 -->
+			<rule><![CDATA[  ^(?<who>.{0,5}?)录[制]?[几一]?[个条句段](话|语音(留言|信息|消息|短信)?|留言|信息|消息|短信)(发送?)?给.{0,3}?中?(?<name>.+)   ]]></rule>
+			
+			<rule><![CDATA[  ^(?<who>.{0,5}?)录[制]?[几一]?[个条句段](话|语音(留言|信息|消息|短信)?|留言|信息|消息|短信).{0,2}给.{0,3}?中?(?<name>.+)发送?.{0,3}$  ]]></rule>
+			
+			<!-- 给XXX 录个话 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(给|跟|和|与|同)(?<name>.+?)(录[制]?)[几一]?[个句段]话.{0,2}?$  ]]></rule>
+			
+			<!--  1)  留个 【言|话|信】 给 XXX        
+			      2)  留 【言|话|信】  XXX-->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(留|回)[几一]?[个句条段]?([言话信]|[信|消]息)给(?<name>.+)   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(留)[几一]?[个句条段]?言(?<name>.+)   ]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+			<result_handler name="contactHandler" group="name"/>
+		</rules>
+		
+		<rules action="open" match="false"  priority="9">
+			<!-- 主动陈述 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)(发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?(语音)?(留言|信息|消息|短信).{0,6}$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(发送?|回复|回覆|覆|复|回|留|录[制]?)[几一]?[个条段]?语音(留言|信息|消息|短信)?.{0,6}$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(留|回)[几一]?[个条段]?(言|话|信).{0,6}$   ]]></rule>
+			
+			<!-- 录个话 -->
+			<rule><![CDATA[   ^(?<who>.{0,5}?)(录[制]?|发)[几一]?[个句段]话.{0,1}?$  ]]></rule>
+			
+			<!-- iwant给xx发短信 -->
+			
+			<validator group="who" name="IWantValidator" return="true" />
+			 
+			<validator group="who" name="questionValidator" return="false" />	
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+		</rules>
+		
+	</domain>
+
+	<domain name="message" type="internal">
+		
+		<rules action="reply" match="false">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(我(要|想|想要)|给我)?(回复|回覆)$   ]]></rule>
+			<rule><![CDATA[   ^(我(要|想|想要)|给我)?(回复|回覆|覆|复|回)一?[下个条]?(留言|信息|消息|短信|信)$   ]]></rule>
+		</rules>
+
+		<rules action="cancel">
+			<rule><![CDATA[   (?<who>.{0,5}?)(停止|停掉|放弃|取消)(发送?|录制?)(留言|信息|消息|短信|录音)?.{0,1}$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(停止|停掉|放弃||再说|不要|迟点|晚点|以后|日后|明天|.年)(再发)?.{0,1}$   ]]></rule>			
+			<rule><![CDATA[   (?<who>.{0,5}?)(退出|取消|返回)$  ]]></rule>
+			<rule><![CDATA[   ^[不关别][了].{0,1}$   ]]></rule>
+			<rule><![CDATA[   ^(算了)$   ]]></rule>
+			<rule><![CDATA[   (?<act>.+)发[送了出]?.{0,1}$  ]]></rule>
+			<rule><![CDATA[   (?<act>.+)发给.{0,3}$  ]]></rule>
+			<rule><![CDATA[   (?<act>.+)录了?(吧|啊)?$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="act" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="send" return_group="name" priority="9" depend="message.recording">		
+			<rule ref="replace_statement_rule" />	
+			<rule><![CDATA[   (?<who>.{0,5}?)发[出过]去$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)发送(录制|留言|信息|消息|短信|录音)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:结束|完成)(?:录制|留言|录音)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:录制|留言|录音)(?:结束|完成)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:结束|完成|说完)$   ]]></rule>
+			<!-- 发XX给XX吧 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)发送?(录制|留言|信息|消息|短信|录音)?给.{0,5}$   ]]></rule>
+			<validator group="who" name="questionValidator" return="false" />	
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+		</rules>
+		
+		<rules action="send" return_group="name" priority="9" depend="message.recording">			
+			<rule><![CDATA[   (?<who>.{0,5}?)发[送出吧了啦]$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)发送?[出过]去[吧]?$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:录制?|留言|录音)(?:(好)了)$   ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:录制?|留言|录音)(?:完[成了])$   ]]></rule>
+			<validator group="who" name="questionValidator" return="false" />	
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+		</rules>
+
+		<rules action="choice" priority="8">
+			<rule ref="cmd_choise_match_rule"/>
+			<rule ref="cmd_choise_find_rule"/>
+		</rules>
+		
+		<!-- 匹配整串字符串时，group设为* 当组不存在的时候，默认是当成validate正常通过 -->
+		<rules action="input" return_group="name" depend="message.open" priority="100">
+			<rule><![CDATA[   (?<who>.*?)[发留][一个条]{0,2}(言)?给(?<name>.+)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)[发留][一个条]{0,2}([信消]息|留言|(?<!电)话)?给(?<name>.+)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)[发留]给(?<name>.+)   ]]></rule>
+			<rule><![CDATA[   (?<name>.+)   ]]></rule>
+
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+			
+			<result_handler name="contactHandler" group="name" />
+		</rules>
+
+	</domain>
+</nlu>

@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<!-- 否定句规则 -->
+	<rules name="negative_rule">
+		<rule><![CDATA[ (?<!要)不  ]]></rule>
+		<rule>(?:没有|别|否|非|不)</rule>
+	</rules>
+	
+	<!-- 延时动作 -->
+	<rules name="delay_rule">
+		<rule>(下次|迟点|晚点|将来|未来|以后|日后|明天|后天|早上|晚上|中午|下午|明年)</rule>
+	</rules>
+	
+	<!-- 半闭，结束动作 -->
+	<rules name="cancel_rule">
+		<rule>(取消|拒[绝接掉了]?|断[开掉了])</rule>
+	</rules>
+	
+	<rules name="exit_rule">
+		<rule>结束|关[闭了掉]吧?|退出</rule>
+	</rules>
+	
+	<rules name="stop_rule">
+		<rule>(暂停|停止?)</rule>
+	</rules>
+	
+	<rules name="i_want_rule">
+	    <rule><![CDATA[ ^$ ]]></rule>
+	    <rule><![CDATA[ ^请你$ ]]></rule>
+		<rule><![CDATA[ ^(我们?(要|想|想要)?|(请|来|可以|能(否|不能)?|那就)?[给帮替代]我们?|请?帮忙)$ ]]></rule>
+		
+		
+		<rule><![CDATA[ ^(请|来|可以|能(否|不能))?(现在|立刻|马上|立即|快(一?点|快?)|赶[快紧忙]|速[度速])([给帮替代]我们?)?$ ]]></rule>
+		
+		<rule><![CDATA[ ^(请|来|可以|能(否|不能))?([给帮替代]我们?)(现在|立刻|马上|立即)$ ]]></rule>
+		
+		 
+		<!-- 打电话相关适配回拨 -->
+		<!-- <rule><![CDATA[ ^(回|拨)$ ]]></rule>  -->  
+		
+		<!-- 祈使句 -->
+		<rule><![CDATA[ ^(请(开始)?|麻烦|能不能|可不可以|开始|那就)$ ]]></rule>		
+		
+		<!-- 激活动作 -->
+		<!-- 
+		<rule><![CDATA[ ^(请(开启|启动)?|开启|启动)$ ]]></rule>
+		 -->	
+	</rules>
+	
+	
+	<rules name="cancel_exit_stop_rule">
+		<rule ref="cancel_rule"/>
+		<rule ref="exit_rule"/>
+		<rule ref="stop_rule"/>
+	</rules>
+	
+	<!-- 疑问句副词规则，不包括语气助词(么|吗) -->
+	<rules name="question_adv_rule">
+		<rule>(怎么|如何|怎样|什么|谁|有人)</rule>
+	</rules>
+	
+	<rules name="media_play_and_stop_rule">
+		<rule>(轮播)</rule>
+	</rules>
+
+	<!-- 确认回复规则 实际上根本就不需要这个return_key，只需要用domain和action来判断就行了 -->
+	<rules name="confirm_yes_rule" match="true">
+		<rule> ^(?:对|是|好|嗯|对的|是的|好的|没错|不错|可以|挺好)$ </rule>
+		<rule> ^(?:同意|接受|允许|通过)$ </rule>
+	</rules>
+	
+	<rules name="confirm_no_rule" match="true">
+		<rule> ^(错|不是|不好|不对|不可以|[说打发]错)$ </rule>
+		<rule> ^(?:不同意|拒绝|不允许|不通过|忽略|无视)$ </rule>
+	</rules>
+	
+	<rules name="call_by_voice_rule">
+		<rule><![CDATA[ (?<!.{0,10}?视频)语音(?!.{0,10}?视频) ]]></rule>
+		<rule><![CDATA[ (?<!.{0,10}?视频)语聊(?!.{0,10}?视频) ]]></rule>
+	</rules>
+	
+	<rules name="replace_middle_text_to_num_rule" replacement="5">
+		<rule>(中间|适中|刚好|中部|中等)</rule>
+	</rules>
+
+	<!-- 前处理规则 替换陈述语句后面的语气词，不包括么，吗之类的疑问句语气词 -->
+	<rules name="replace_statement_rule" replacement="">
+		<rule> (了|啦|吧|也|的|呀|阿|呢|则|啊|哩|哈|咧|哇|呗|喽|罗|呵|耶|罢|噢|咯|呕|哟|嘛|呐|呦|啰|儿)$ </rule>
+	</rules>
+	
+	<rules name="voice_video_rule">
+		<rule>(语音|视频)</rule>
+	</rules>
+	
+	<rules name="cmd.exit_rule">
+   <!-- 
+		<rule><![CDATA[(?<what>(?<!(卧室|留言|信息|消息|静音|声音|音量|蓝牙|摄像头?|休息模式|轮播|视频|麦(克[风疯])|话筒|闹钟|收藏|镜像|投[屏影射]|映射|画面|通话|视频|远程|录制|快进|电话).{0,4}))(关[闭了掉]|退出|关掉|结束)(?!.{0,4}(留言|信息|消息|静音|声音|音量|蓝牙|摄像头?|休息模式|轮播|视频|麦(克[风疯])|话筒|闹钟|收藏|镜像|投[屏影射]|映射|画面|通话|视频|远程|录制|快进|电话|卧室))]]></rule>
+	 -->
+	 	<rule><![CDATA[^(通话|留言|相册|抓拍|抓屏|通[信讯]录)?(关[闭了掉]|退出|关掉|结束)?$]]></rule>
+	 	<rule><![CDATA[^(请|立刻|马上|现在)?(关[闭了掉]|退出|关掉|结束)(通话|留言|相册|抓拍|抓屏|通[信讯]录)?$]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+	
+	<rules name="cmd.cancel_rule">
+	<!-- 
+		<rule><![CDATA[(?<what>(?<!(卧室|留言|信息|消息|静音|声音|音量|蓝牙|摄像头?|休息模式|轮播|画面|视频|麦(克[风疯])|话筒|闹钟|收藏|镜像|投[屏影射]|映射|画面|通话|视频|远程|录制|快进|电话).{0,4}))(取消)(?!.{0,4}(留言|信息|消息|静音|声音|音量|蓝牙|摄像头?|休息模式|轮播|画面|视频|麦(克[风疯])|话筒|闹钟|收藏|镜像|投[屏影射]|映射|画面|通话|视频|远程|录制|快进|电话|卧室))]]></rule>
+	-->
+		<rule><![CDATA[ ^(取消)$]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+	
+	<rules name="cmd.back_rule">
+	<!-- 
+		<rule><![CDATA[(?<what>.*)后退[\D]{0,2}(?![\d一二三四五六七八九十]?[时分秒])]]></rule>
+	 -->		
+		<rule><![CDATA[(?<what>.*)返回(?!(主页|首页|闹钟|收藏))]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="voice.up_rule" return_group="value">
+		<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*)(升|增加|加|增|放大|强)(响|大|高|加)?(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*)(升|增加|加|增|放大|强)(响|大|高|加)?(?<value>(\d)+%)]]></rule>
+		
+		<rule><![CDATA[(?<what>.*)(调|放|升|开|弄|加)?(响|大|高|加|强)(?<how>.*)(音量|声音|声|音)一?(点|些|下) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|放|升|开|弄|加)?(响|大|高|加|强)一?(点|些|下)儿?(?<how>.{0,2})(音量|声音|声|音) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(声|音量|声音|音)(稍微)?(?<how>.*)再?(调|放|升|开|弄|加)?(响|大|高|加|强)一?(点|些|下) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|放|升|开|弄|提|增|加)(响|大|高|加|强)(音量|声音|声|音) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(?<how>.*)再?(调|放|升|开|弄|提|增|加)(响|大|高|加|强) ]]></rule>
+		<rule><![CDATA[(音量|声音|声|音).{0,2}(太|有点|过于)(低|小) ]]></rule>
+		<rule><![CDATA[(太|有点|过于)(低|小)(音量|声音|声|音).{0,2} ]]></rule>
+		<rule><![CDATA[(?<who>.*)(声音|音量)?(?<how>.*)(响|响亮|洪亮|宏亮|强)一?(点|些|下)]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+
+	<rules name="voice.down_rule" return_group="value">
+	<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*)(降|减|下|弱)(降|低|小|少|弱)?(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.{0,3}[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*)(降|减|下|弱)(降|低|小|少|弱)?(?<value>(\d)+%)]]></rule>
+		<rule><![CDATA[^(静|安静)$ ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|放|关|弄|降|减)?(低|小|少|弱)(音量|声音|声|音)一?(点|些|下) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|弄|搞|放)?(静|安静)一?(点|些|下) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|放|关|弄|降|减)?(低|小|少|弱)一?(点|些|下)儿?.{0,2}(音量|声音|声|音) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(稍微)?(?<how>.*)再?(调|放|关|弄|降|升|减|弱)?(低|小|少|静|安静)一?(点|些|下) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(调|放|关|弄|降|减)(低|小|少|弱)(音量|声音|声|音) ]]></rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(?<how>.*)再?(调|放|关|弄|降|减)(低|小|少|弱)]]></rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(?<how>.*)再?(降|减|轻|小|少|弱)一?(点|些|下)]]></rule>
+		<rule><![CDATA[(音量|声音|声|音)?.{0,2}(太|有点|过于|很)(响|大|高|加|吵|强|杂) ]]></rule>
+		<rule><![CDATA[(?<who>.*)(声音|音量)?(?<how>.*)(轻柔)一?(点|些|下)]]></rule>		
+		<validator group="what" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />	
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+	
+	<rules name="voice.voice_to_rule" return_group="value">
+		<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*?)(调|放|关|弄|降|减|升|开|加|增|曾)?(到|至)?(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.{0,3}[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*)(声音|音量)(?<how>.*?)(调|放|关|弄|降|减|升|开|加|增|曾)?(到|至)?(?<value>(\d)+%)]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />	
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+
+	<rules name="voice.max_rule">
+		<rule>最大声</rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(?<how>.{0,2})最大 ]]></rule>
+		<rule><![CDATA[(?<what>.*)最大.{0,2}(音量|声音|声|音).{0,2} ]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />		
+
+	</rules>
+
+	<rules name="voice.min_rule">
+		<rule>最小声</rule>
+		<rule><![CDATA[(?<what>.*)(音量|声音|声|音)(?<how>.{0,2})最(小|低) ]]></rule>
+		<rule><![CDATA[(?<what>.*)最(小|低).{0,2}(音量|声音|声|音)]]></rule>
+		<validator group="what" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />	
+	</rules>
+	
+	<rules name="voice.voice_mute_on">
+		<rule><![CDATA[  (?<who>.*?)(打开|开启|本地)?静音$  ]]></rule>	
+		<rule><![CDATA[  (?<who>.*?)(关掉|关闭|关了).{0,2}(?=(声音|音量))]]></rule>
+		<rule><![CDATA[ (声音|音量)(?<how>.*?)关(了?|掉|闭)$]]></rule>		
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="how" name="negativeValidator" return="false" />	
+	</rules>
+	
+	<rules name="voice.voice_mute_off">
+		<rule><![CDATA[ (?<who>.*?)(关掉|关闭|取消|关了?|不要|不|结束|停止|退出)静音$]]></rule>
+		<rule><![CDATA[ (?<who>.*?)(打开|开|恢复).{0,2}(?=(声音|音量))$]]></rule>
+		<rule><![CDATA[ (声音|音量)(?<how>.{0,2})(打开)$]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="how" name="negativeValidator" return="false" />	
+	</rules>
+	
+	<rules name="camera.open_rule">
+		<rule><![CDATA[(?<who>.*)(打开|开启|启动|激活)(?<how>.{0,2})摄?像头]]></rule>
+		<rule><![CDATA[(?<who>.*)摄?像头(?<how>.{0,2})打?(?<what>.{0,2})开启?]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="camera.close_rule">
+		<rule><![CDATA[(?<who>.*)(关|禁)(闭|了|止)?(?<how>.{0,2})摄?像头]]></rule>
+		<rule><![CDATA[(?<who>.*)摄?像头(?<how>.{0,2})(关|禁)(?<what>.{0,2})(闭|了|止|上)  ]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="show.playui_rule">
+		<rule><![CDATA[(?<who>.*)(显示|打开)一?下?播放器$]]></rule>
+		<rule><![CDATA[(?<who>.*)(显示|回到|打开)一?下?播放器?界面$]]></rule>
+		<rule><![CDATA[(?<who>.*)(显示|回到|打开)(有声|新闻|音乐|电影|电台|笑话)播放器?(界面)?$]]></rule>
+		<rule><![CDATA[(?<who>.*)(显示|回到|打开)正在播放(界面)?$]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="cmd.home_rule">
+		<rule><![CDATA[(?<who>.*)[返退]?(?<how>.{0,2})回?(?<what>.{0,2})到?(首页|主页)]]></rule>
+		<rule><![CDATA[(?<who>.*)(首页|主页)]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="light.up_rule" return_group="value">
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.*)(升|调|增加|加|增|放大)(亮|大|高|加)?(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.*)(升|调|增加|加|增|放大)(亮|大|高|加)?(?<value>(\d)+%)]]></rule>
+		<rule><![CDATA[(?<who>.*?)(?<how>.*)(调|变)([明高更]?亮)(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零)+(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)(?<how>.*)(调|变)([明高更]?亮)(?<value>(\d)+%)]]></rule>
+		  
+		<rule><![CDATA[(?<who>.*?)(升|调|增加|加|增|放大)(亮|大|高|加|强)亮度(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零)+(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)(升|调|增加|加|增|放大)(亮|大|高|加|强)亮度(?<value>(\d)+%)]]></rule>
+		
+		<rule><![CDATA[(?<who>.*?)调亮屏幕]]></rule>
+		<rule><![CDATA[(?<who>.*?)(升|调|增加|加|增|放大)(亮|大|高|加|强)亮度]]></rule>
+		<rule><![CDATA[(?<who>.*?)([调][亮大高]|提[高亮]|升高|增[加亮大高强]|[放加弄][大亮高]|[高亮加升])(一?下)?.{0,3}(屏幕)?亮度]]></rule>
+		
+		
+		<rule><![CDATA[(?<who>.*?)调?[^响想宏洪]?亮一?(点|些|下)]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.{0,6})调亮]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?((屏幕)?亮度)(?<how>.{0,6})([调][亮大高]|提[高亮]|升高|增[加亮大高强]|[放加弄][大亮高]|[高亮加升]一?[点些]儿?)]]></rule>		
+		
+		<rule><![CDATA[(?<who>.*?)(屏幕|亮度)?(太|有点|过于)(暗|按|黑).{0,2} ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+
+	<rules name="light.down_rule" return_group="value">
+	
+		
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.*)(变|调|降|减|下)(黑|暗|按|降|低|小|少)?(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.*)(变|调|降|减|下)(黑|暗|按|降|低|小|少)?(?<value>(\d)+%)]]></rule>
+		<rule><![CDATA[(?<who>.*?)(?<how>.*)(调|变)得?([更]?[黑暗按])(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零)+(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)(?<how>.*)(调|变)得?([更]?[黑暗按])(?<value>(\d)+%)]]></rule>
+		  
+		<rule><![CDATA[(?<who>.*?)(调|降|减|下)(降|低|小|少)亮度(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零)+(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)(调|降|减|下)(降|低|小|少)亮度(?<value>(\d)+%)]]></rule>
+		<rule><![CDATA[(?<who>.*?)调?[暗按]一?(点|些|下)]]></rule>	
+		<rule><![CDATA[(?<who>.*?)调[暗按]屏幕]]></rule>
+		<rule><![CDATA[(?<who>.*?)(变|调|降|减|下)(黑|[暗按]|降|低|小|少)?亮度]]></rule>		
+		<rule><![CDATA[(?<who>.*?)把?(屏幕|亮度)(?<how>.*)调?[暗按]]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?((屏幕)?亮度)(?<how>.{0,6})(调[黑暗按小少低]|降[低底]|减[少小]|[变放弄][小暗低]|[低暗黑]一?[点些]儿?)]]></rule>	
+		<rule><![CDATA[(?<who>.*?)(屏幕|亮度)?(太|有点|过于)(明亮|[亮凉]|光).{0,2} ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+
+	<rules name="light.min_rule">
+		<rule><![CDATA[(?<who>.*?)调(到|至)?最[暗按]  ]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?亮度调(到|至)?最[暗按小少低]  ]]></rule>
+		<rule><![CDATA[(?<who>.*?)(调(到|至)?)?最[小低]亮度 ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="light.max_rule">
+		<rule><![CDATA[(?<who>.*?)调(到|至)?最[亮]]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?亮度调(到|至)?最[亮大高]]]></rule>
+		<rule><![CDATA[(?<who>.*?)(调(到|至)?)?最大亮度 ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="light.to_rule" return_group="value">
+		<rule><![CDATA[(?<who>.*?)把?亮度(?<how>.*)(调[节整]?|放|关|弄|降|减|升|开|加)(到|至)(?<value>(百分之)?(\d|一|二|三|四|五|六|七|八|九|十|零|百)+%?(?![千万亿])(?!.*[点|些|下]))]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?亮度(?<how>.*)(调[节整]?|放|关|弄|降|减|升|开|加)(到|至)(?<value>(\d)+%)]]></rule>  
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />	
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+
+<!-- 
+	<rules name="rest.open_rule">
+		<rule><![CDATA[(?<who>.*?)(打开|启动|开启|进入)(?<how>.*)休息模式]]></rule>
+		<rule><![CDATA[(?<what>.*?)把?休息模式(?<how>.*)(打开|启动|开启)]]></rule>
+		<rule><![CDATA[^休息模式$]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="how" name="negativeValidator" return="false" />
+		<validator group="what" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="rest.close_rule">
+		<rule><![CDATA[(?<who>.*?)(关闭|关掉|退出|退了|关了|取消)(?<how>.*)休息模式]]></rule>
+		<rule><![CDATA[(?<who>.*?)把?休息模式(?<how>.*)(关闭|关掉|退出|退了|关了|取消)]]></rule>		
+		<validator group="who" name="negativeValidator" return="false" />
+		<validator group="how" name="negativeValidator" return="false" />
+	</rules>
+ -->
+	<rules name="config.rule">
+		<rule><![CDATA[^(打开|启动|开启|查看|看看|进入)?(系统)?设置(界面|页面?)?$]]></rule>
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="next.rule">
+		<rule><![CDATA[  ^[下换]一(页|屏|个|项|条|张|章)$  ]]></rule>
+		<rule><![CDATA[ ^[向往朝]?右[滑划]动?$  ]]></rule>
+		<rule><![CDATA[  ^翻(一|下)?[页屏]$  ]]></rule>
+		<rule><![CDATA[  ^[向往朝]?下[滑划]动?$ ]]></rule>
+		<rule><![CDATA[ ^[向往朝]?[后下][翻番滚](一?(页|屏|个|项|条|张|章))?$  ]]></rule>
+	</rules>
+
+	<rules name="prev.rule">
+		<rule><![CDATA[ ^上一(页|屏|个|项|条|张|章)$ ]]></rule>
+		<rule><![CDATA[  ^[向往朝]?左[滑划]动?$  ]]></rule>
+		<rule><![CDATA[ ^[向往朝]?上[滑划]动?$  ]]></rule>
+		<rule><![CDATA[ ^[向往朝]?[前上][翻番滚](一?(页|屏|个|项|条|张|章))?$  ]]></rule>
+	</rules>
+	
+	<rules name="media_next.rule">
+		<rule ref="replace_statement_rule" />
+		<rule><![CDATA[  ^(?<who>.*?)(播放)?下一(个|首)$ ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+
+	<rules name="media_prev.rule">
+		<rule ref="replace_statement_rule" />
+		<rule><![CDATA[  ^(?<who>.*?)(播放)?上一(个|首)$ ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+	<rules name="media_play_match.rule">
+		<rule ref="replace_statement_rule" />
+		<rule><![CDATA[ (?<who>.*?)(继续|接着|循环)播$  ]]></rule>
+		<rule><![CDATA[ (?<who>.*?)(继续|接着|循环)?播放$  ]]></rule>
+		<rule><![CDATA[ (?<who>.*?)(继续|接着|循环)?播放?(视频|录像|片段|抓拍|录制|图片|相册)$ ]]></rule>
+		<rule><![CDATA[ (?<who>.*?)(视频|录像|片段|抓拍|录制|图片|相册)(继续|接着|循环)?播放?$ ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+	</rules>
+	
+	<rules name="media_play_find.rule" return_group="value">
+		<rule><![CDATA[  (?<who>.*?)播放(.*第(?<value>[一二三四五六七八九十]))(?![十百千万亿一二三四五六七八九十]).{0,2}?(视频|录像|片段|抓拍|录制|图片|相册)?$]]></rule>
+		<rule><![CDATA[  (?<who>.*?)播放(.*第(?<value>[\d]{1}))(?![十百千万亿一二三四五六七八九十])[^\d]{0,2}?(视频|录像|片段|抓拍|录制|图片|相册)?$]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<validator group="who" name="negativeValidator" return="false" />
+		<result_handler name="setToNumber" group="value" cascade="false" />
+	</rules>
+	
+	<rules name="media_play_last.rule" return_group="*" return_key="value">
+		<rule><![CDATA[ (?<!((.?停.?)|退出|取消|(关.?)))播放(最后)(一|1)(个)? ]]></rule>
+		<filter name="discardNegativeInput"/>
+		<result_handler name="selectIndex" group="value" cascade="false" />
+	</rules>	
+		
+
+	<rules name="media_stop.rule">
+		<rule><![CDATA[(?<who>.*?)(播放|视频)?(暂停|停止|中止)(播放|视频)?]]></rule>
+		<rule><![CDATA[(?<who>.*?)把(播放|视频)(暂停|停止|中止)]]></rule>
+		<rule><![CDATA[(?<who>.*?)稍?[等停顿]一下]]></rule>
+		<rule><![CDATA[ ^(播放|视频)停$ ]]></rule>
+		<validator group="who" name="IWantValidator" return="true" />
+		<filter name="discardNegativeInput"/>
+		<filter name="discardMediaPlayStopInput"/>
+	</rules>
+	
+	<!-- 选择 -->
+	<rules name="cmd_choise_match_rule" match="true" return_group="*" return_key="value">
+		<rule><![CDATA[ (一|二|三|四|五|六|七|八|九|十) ]]></rule>		
+		<rule><![CDATA[ (第一|第二|第三|第四|第五|第六|第七|第八|第九|第十) ]]></rule>
+		<rule><![CDATA[ (1|2|3|4|5|6|7|8|9|10) ]]></rule>		
+		<rule><![CDATA[ (第1|第2|第3|第4|第5|第6|第7|第8|第9|第10) ]]></rule>
+		<rule><![CDATA[ (d一|d二|d三|d四|d五|d六|d七|d八|d九|d十) ]]></rule>
+		<rule><![CDATA[ (d1|d2|d3|d4|d5|d6|d7|d8|d9|d10) ]]></rule>		
+		<filter name="discardNegativeInput"/>
+		<filter name="SystemChoiceDomainFilter" />	
+		<result_handler name="selectIndex" group="value" cascade="false" />
+	</rules>
+	
+	<rules name="cmd_choise_find_rule" match="true" return_group="*" return_key="value">
+		<rule>(.*第一|.*第二|.*第三|.*第四|.*第五|.*第六|.*第七|.*第八|.*第九|.*第十)(?![十百千万亿一二三四五六七八九十]).*</rule>
+		<!-- (.*第一.*|.*第二.*|.*第三.*|.*第四.*|.*第五.*|.*第六.*|.*第七.*|.*第八.*|.*第九.*|.*第十.*)</rule> -->
+		<rule>(.*第1|.*第2|.*第3|.*第4|.*第5|.*第6|.*第7|.*第8|.*第9|.*第10)$</rule>
+		<rule>(.*第1|.*第2|.*第3|.*第4|.*第5|.*第6|.*第7|.*第8|.*第9|.*第10)(个|条|行|).*</rule>
+		<rule><![CDATA[ (最后)(一|1)(个)? ]]></rule>
+		<filter name="discardNegativeInput"/>
+		<filter name="SystemChoiceDomainFilter" />	
+		<result_handler name="selectIndex" group="value" cascade="false" />
+	</rules>
+	
+	<rules name="contact_name_rule">
+		<rule>^([个打])$</rule>
+	</rules>
+	
+	<rules name="has_continue">
+		<rule><![CDATA[ (继续|接着)  ]]></rule>
+	</rules>
+	
+	<rules name="power_off_domain_action_rule">
+		<rule><![CDATA[ (phone.out|phone.in|phone.calling|phone.calling_invite|phone.call|phone.call_by_voice)  ]]></rule>
+	</rules>
+	
+	
+	<!-- 可以配置validator。暂时在程序中写死 -->
+	<validators>
+		<validator name="negativeValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="negative_rule" />
+		<validator name="delayValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="delay_rule" />
+		
+		<validator name="cancelExitStopValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="cancel_exit_stop_rule" />
+		<validator name="cancelValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="cancel_rule" />
+		<validator name="exitValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="exit_rule" />
+		<validator name="stopValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="stop_rule" />
+		<validator name="questionValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="question_adv_rule" />
+		
+		<validator name="callByVoiceValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="call_by_voice_rule" />
+		<validator name="contactNameValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="contact_name_rule" />
+		
+		<validator name="hasContinueValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="has_continue" />
+		
+		<validator name="IWantValidator"	class="com.nlu.nlulib.rule.validator.NluRulesValidator" rule="i_want_rule" />
+		
+		<validator name="powerOffDomainActionValidator"	class="com.nlu.nlulib.rule.validator.NluDomainAndActionValidator" rule="power_off_domain_action_rule" />
+	</validators>
+
+	<result_handlers>
+		<result_handler name="selectIndex"	class="com.nlu.nlulib.rule.result.handler.SelectIndexResultHandler" />
+		<result_handler name="contactHandler"	class="com.nlu.nlulib.rule.result.handler.ContactResultHandler" />
+		<result_handler name="setToNumber" class="com.nlu.nlulib.rule.result.handler.SetToNumberResultHandler"/>
+		<result_handler name="returnAllContacts" class="com.nlu.nlulib.rule.result.handler.ReturnAllContactHandler"/>
+		<result_handler name="integerValueResultHandler" class="com.nlu.nlulib.rule.result.handler.IntegerValueResultHandler"/>
+	</result_handlers>
+
+
+	<rules name="message_mailto_rule">
+		<rule><![CDATA[ (留言|信息|消息|短信)  ]]></rule>
+	</rules>
+	
+	<rules name="system_choice_domain_filter_rule">
+		<rule><![CDATA[ (bluetooth)  ]]></rule>
+	</rules>
+	
+	
+	<filters>
+		<filter name="messageFilter" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="message_mailto_rule" />
+		<!-- global参数如果为true，则会在全局调用，rules里面有引用的话，则有可能会出错，所以rules里面不应该引用global的filter 
+			默认为true -->
+		<filter name="datetime2number" class="com.nlu.nlulib.rule.filter.DateTime2NumberFilter"/>
+		
+		<filter name="discardNegativeInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="negative_rule" />
+		<filter name="discardDelayInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="delay_rule" />
+		
+		<filter name="discardCancelExitStopInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="cancel_exit_stop_rule" />
+		<filter name="discardCancelInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="cancel_rule" />
+		<filter name="discardExitInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="exit_rule" />
+		<filter name="discardStopInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="stop_rule" />
+		
+		<filter name="discardVoiceVideoInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="voice_video_rule" />
+		
+		<filter name="discardMediaPlayStopInput" class="com.nlu.nlulib.rule.filter.DiscardFilter" rule="media_play_and_stop_rule" />
+		<filter name="pingyin" class="com.nlu.nlulib.rule.filter.PingYinFilter"	global="true" />
+		
+		<filter name="SystemChoiceDomainFilter" class="com.nlu.nlulib.rule.filter.DomainAndActionFilter" rule="system_choice_domain_filter_rule"/>
+	</filters>
+</nlu>	

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<domain name="alarm" type="internal">
+		<!-- 未读留言 -->
+		<rules action="cancel" return_group="name">
+			<rule><![CDATA[(?<what>.{0,4}?)(闹钟|倒(计时|数))?(关[闭了掉]?|退出|停[掉止了]?|暂停)(闹钟|倒(计时|数))?]]></rule>
+			<validator group="what" name="negativeValidator" return="false" />
+		</rules>
+
+	</domain>
+</nlu>

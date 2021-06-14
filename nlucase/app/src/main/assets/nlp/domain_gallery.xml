@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nlu>
+	
+	<rules name="new_and_update_rule">
+		<rule><![CDATA[ 新|更新|最新  ]]></rule>
+	</rules>
+	
+	<rules name="must_have_DI_rule">
+		<rule><![CDATA[ 第  ]]></rule>
+	</rules>
+	
+	<rules name="have_vedio">
+		<rule><![CDATA[ 视频  ]]></rule>
+	</rules>
+	
+	<rules name="have_photo">
+		<rule><![CDATA[ (相[片册]|图片|照片)  ]]></rule>
+	</rules>
+	
+	<validators>
+		<validator name="hasDIValidator"	class="com.nlu.rule.validator.NluRulesValidator" rule="must_have_DI_rule" />
+		<validator name="hasVedioValidator"	class="com.nlu.rule.validator.NluRulesValidator" rule="have_vedio" />
+		<validator name="hasPhotoValidator"	class="com.nlu.rule.validator.NluRulesValidator" rule="have_photo" />
+	</validators>
+	
+	<filters>
+		<filter name="discardNewAndUpdate" class="com.nlu.rule.filter.DiscardFilter" rule="new_and_update_rule" />
+	</filters>
+
+	<domain name="gallery" type="external">
+		<rules action="open" priority="5">
+		<!-- 
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:打开|进入|查?看|瞧瞧?)(?!.*?新)[一下我的]{0,4}(?<!录制|抓拍)(?:相册|照片|图库|相片)(?!更新).{0,4}(?!.)   ]]></rule>
+		 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:打开|查看|瞧瞧?|看看?)一?下?(我的?)?((全部|所有)的?)?(?:相册|照片|图库|相片)   ]]></rule>		 
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:打开|进入|查看|瞧瞧?|看看?)一?下?(我的)?(?:相册|照片|图库|相片)   ]]></rule>
+			<filter name="discardNewAndUpdate"/>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="update" priority="9">
+			<rule ref="replace_statement_rule" />
+			<!-- 祈使句 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:查?看)[一下我的]{0,4}(相册)?最?新的?(?<!录制|抓拍)(?:照片|视频|相册|相片|图片).{0,4}$  ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:查?看)[一下我的]{0,4}(?<!录制|抓拍)(?:照片|视频|相册|相片|图片)的?更新.{0,4}$  ]]></rule>			
+			<rule><![CDATA[   (?<who>.{0,5}?)播放[一下]{0,2}(最?新)的?(?<!录制|抓拍)(?:照片|视频|相册|相片|图片).{0,4}$  ]]></rule> <!-- 播放必须要有新 -->
+			
+			<!-- 疑问句1. 疑问语气 -->
+			<rule><![CDATA[   (?<how>.{0,5}?)有(最?新)的?(照片|相册|相片)[了啦]?[吗么没]$  ]]></rule>
+			
+			<!-- 相册有新的吗（2种句式） -->
+			<rule><![CDATA[   (?<how>.{0,5}?)(照片|相册|相片)有([最]?新)[的了啦][吗么没]$  ]]></rule>
+			<rule><![CDATA[   (?<how>.{0,5}?)(照片|相册|相片)有([更刷]?新)[的了啦]?[吗么没]$  ]]></rule>
+			
+			<!-- 疑问句2. 判断语气 -->			
+			<validator group="who" name="IWantValidator" return="true" />
+			
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+
+		<rules action="photograph">
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一几]?[下个张些]?)?.{0,5}照片?|(来|过来)?照[一几些]?[下个张]?.{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十][下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十][下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十几]十[下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十几]十[下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十几]十[一二两三四五六七八九十][下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十几]十[一二两三四五六七八九十][下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)把相机打开  ]]></rule>
+			
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?世界上?最(美貌?|美|棒|正点?|帅|可爱|牛逼?|好看|漂亮|酷|厉害|屌丝?|有钱|富裕?|懒|邋遢)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?世界上?(身材|样子|相貌|外貌)最(美|棒|正点?|好看?|漂亮)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?(成[绩就])最(高|好|棒|牛|厉害|屌)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?([未将]来的?|以后的?)(大?明星|科学家|中国首富).{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?([未将]来的?|以后的?)会?((改变|征服)(世界|地球|宇宙))的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)隔壁老王是谁$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是隔壁老王$   ]]></rule>
+			<validator group="what" name="negativeValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="search_date_before" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<what>.*?)看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天]前.{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   (?<what>.*?)看?(?<month>\d+)月?(?<day>\d+)[日号天]前.{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+			<validator group="what" name="negativeValidator" return="false" />
+			<validator group="what" name="hasContinueValidator" return="false" />			
+		</rules>
+		
+		<rules action="search_date_after" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<what>.*?)看?(最近)(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天].{0,3}(照片|视频|相册|相片|图片)     ]]></rule>
+			<rule><![CDATA[   (?<what>.*?)看?(最近)(?<month>\d+)月?(?<day>\d+)[日号天].{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			
+			<rule><![CDATA[   (?<what>.*?)看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天]后.{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   (?<what>.*?)看?(?<month>\d+)月?(?<day>\d+)[日号天]后.{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+			<validator group="what" name="negativeValidator" return="false" />
+			<validator group="what" name="hasContinueValidator" return="false" />	
+		</rules>
+		
+		<rules action="search_date" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (?<what>.*?)看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号].{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   (?<what>.*?)看?(?<month>\d+)月?(?<day>\d+)[日号].{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+			<validator group="what" name="negativeValidator" return="false" />
+			<validator group="what" name="hasContinueValidator" return="false" />	
+		</rules>
+		
+		<rules action="rotation_start">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)(?:开始|开启|打开)[一下]{0,2}(?:照片|视频|相片|图片)(轮播|轮流播放|自动(播放|轮播)).{0,1}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(?:照片|视频|相[片册]|图片)(?<how>.{0,2})(轮播|轮流播放|自动(播放|轮播))(开始)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(轮播|轮流播放|自动(播放|轮播)|(循环|一直)?(轮播|播放))(家庭)?((照片|相[片册]|图片)(视频)?)$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(轮播|轮流播放|自动(轮播)|(循环|一直)?(轮播))(家庭)?((照片|相[片册]|图片)(视频)?|视频)$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+		
+	</domain>
+	
+	<!-- 相册抓拍Homecard -->
+	<domain name="gallery" type="internal">
+		<rules action="new_photos_and_captures" depend="gallery.new" priority="4">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)(用?大图)?(?:打开|查看|看看?|播放|放大|浏览)一?下?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})[张个])(最?新的?)?(?<what>.{0,7})$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})[张个])?(?<what>.{0,7})(打开|播放|放大)$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)([使采]?用)?大图[查看]看$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(?<what>.{0,7})(给我)?(放大)(?<how>.{0,2})([查看]?看|播放|打开|浏览)$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="hasVedioValidator" return="true" />
+			<validator group="what" name="hasPhotoValidator" return="true" />	
+		</rules>
+		
+		<rules action="new_photos" depend="gallery.new" priority="4">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)(用?大图)?(?:打开|查看|看看?|播放|放大|浏览)一?下?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})张)(最?新的?)?(?<what>.{0,5})$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})张)?(?<what>.{0,5})(打开|播放|放大)$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)([使采]?用)?大图[查看]看$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(?<what>.{0,5})(给我)?(放大)(?<how>.{0,2})([查看]?看|播放|打开|浏览)$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="hasVedioValidator" return="false" />
+			<validator group="what" name="hasPhotoValidator" return="true" />			
+		</rules>
+		
+		<rules action="new_captures" depend="gallery.new" priority="4">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)(?:打开|查看|看看?|播放|放大|浏览)一?下?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})个)(最?新的?)?(?<what>.{0,5})$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?这([个条些]|([几一二三四五六七八九十两百千万]{1,3}|(\d){0,6})个)?(?<what>.{0,5})(打开|播放|放大)$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(?<what>.{0,5})(给我)?(?<how>.{0,2})([查看]?看|播放|打开|浏览)$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<validator group="what" name="hasVedioValidator" return="true" />
+			<validator group="what" name="hasPhotoValidator" return="false" />
+		</rules>
+		
+		<rules action="open" priority="5">
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:打开|查看|瞧瞧?|看看?)一?下?(我的?)?((全部|所有)的?)?(?:相册|照片|图库|相片)   ]]></rule>		 
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:打开|进入|查看|瞧瞧?|看看?)一?下?(我的)?(?:相册|照片|图库|相片)   ]]></rule>
+			<filter name="discardNewAndUpdate"/>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="update" priority="9">
+			<rule ref="replace_statement_rule" />
+			<!-- 祈使句 -->
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:查?看)[一下我的]{0,4}(相册)?最?新的?(?<!录制|抓拍)(?:照片|视频|相册|相片|图片).{0,4}$  ]]></rule>
+			<rule><![CDATA[   (?<who>.{0,5}?)(?:查?看)[一下我的]{0,4}(?<!录制|抓拍)(?:照片|视频|相册|相片|图片)的?更新.{0,4}$  ]]></rule>			
+			<rule><![CDATA[   (?<who>.{0,5}?)播放[一下]{0,2}(最?新)的?(?<!录制|抓拍)(?:照片|视频|相册|相片|图片).{0,4}$  ]]></rule> <!-- 播放必须要有新 -->
+			
+			<!-- 疑问句1. 疑问语气 -->
+			<rule><![CDATA[   (?<how>.{0,5}?)有(最?新)的?(照片|相册|相片)[了啦]?[吗么没]$  ]]></rule>
+			
+			<!-- 相册有新的吗（2种句式） -->
+			<rule><![CDATA[   (?<how>.{0,5}?)(照片|相册|相片)有([最]?新)[的了啦][吗么没]$  ]]></rule>
+			<rule><![CDATA[   (?<how>.{0,5}?)(照片|相册|相片)有([更刷]?新)[的了啦]?[吗么没]$  ]]></rule>
+			
+			<!-- 疑问句2. 判断语气 -->			
+			<validator group="who" name="IWantValidator" return="true" />
+			
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+	</domain>
+	
+	<domain name="gallery" type="internal">
+
+		<rules action="view" return_group="value" priority="5">
+			<rule><![CDATA[  (?<who>.*?)(?:打开|[查看]?看|播放|放大)一?下?(?<value>[第个张正倒数一二三四五六七八九十百千万亿0-9]{1,5})[个张条](照片|视频|图片|相片)?.{0,3}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(用?大图)?(?:打开|[查看]?看|播放)一?下?(?<value>[第个张正倒数一二三四五六七八九十百千万亿0-9]{1,5})[个张条](照片|视频|图片|相片)?.{0,3}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(?<value>[第个张正倒数一二三四五六七八九十百千万亿0-9]{1,5})(照片|视频|图片|相片).{0,4}(打开|播放|放大)$ ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)([使采]?用)?大图[查看]看$ ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(照片|视频|图片|相片)(给我)?(放大)(?<how>.{0,2})([查看]?看|播放|打开)$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			
+			<validator group="value" name="hasDIValidator" return="true" />
+			
+			<result_handler name="selectIndex" group="value" cascade="false" />			
+		</rules>
+		
+		<rules action="delete" return_group="value" depend="gallery.view" >
+			<rule><![CDATA[  (?<who>.*?)(?<value>删(?:除|除?掉|去|了|啦)?(一?下)?(这(一?[个张])?)?(?:照片|视频|相片|图片)?.{0,3})$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(?<value>把?(这(一?[个张])?)?(?:照片|视频|相片|图片)?(?<how>.{0,6})(删(?:除掉?|掉|去|了|啦)|不要[了啦]).{0,3})$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+		</rules>
+
+		<rules action="delete" return_group="value">
+			<rule><![CDATA[  (?<who>.*?)(?<value>删(?:除|除?掉|去|了|啦)?(一?下)?(这(一?[个张])?)?(?:照片|视频|相片|图片)?.{0,3})$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(?<value>把?(这(一?[个张])?)?(?:照片|视频|相片|图片)?(?<how>.{0,6})(删(?:除掉?|掉|去|了|啦)|不要[了啦]).{0,3})$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<result_handler name="integerValueResultHandler" group="value" cascade="false" />		
+		</rules>
+
+		<rules action="delete" return_group="value" priority="7">
+			<rule><![CDATA[  (?<who>.*?)删(?:除掉?|掉|去|了|啦)?[一下]{0,2}(?<value>[第个张正倒数一二三四五六七八九十百千万亿0-9]{1,5})(?:照片|视频|相片|图片)?.{0,3}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)把?(?<value>[第个张正倒数一二三四五六七八九十0-9]{1,5})(?:照片|视频|相片|图片)?(?<how>.{0,6})(删(?:除掉?|掉|去|了|啦)|不要[了啦]).{0,3}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<result_handler name="selectIndex" group="value" cascade="false" />		
+		</rules>
+
+		<rules action="rotation_start" return_group="value" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  (?<who>.*?)(轮播|人拨|轮流播放|自动(播放|轮播))$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(?:开始|开启|打开)[一下]{0,2}(?:照片|视频|相片|图片)?(轮播|轮流播放|自动(播放|轮播)).{0,1}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(?:照片|视频|相[片册]|图片)(?<how>.{0,2})(轮播|轮流播放|自动(播放|轮播))(开始)?$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(轮播|轮流播放|自动(播放|轮播)|(循环|一直)?(轮播|播放))(家庭)?((照片|相[片册]|图片)(视频)?|视频)$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)从(?<value>[第个章张正倒数一二三四五六七八九十0-9]{1,5})(?:照片|视频|相[片册]|图片)?(开始)?(轮播|播放).{0,3}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)轮播(?:照片|视频|相[片册]|图片)?从(?<value>[第个张章正倒数一二三四五六七八九十0-9]{1,5})开始.{0,3}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="false" />
+			<result_handler name="selectIndex" group="value" cascade="false" />		
+		</rules>
+
+		<rules action="rotation_stop">
+			<rule><![CDATA[  (?<who>.*?)(暂停|停[止掉]|关[掉闭了]|取消|不要|结束|退出)[一下]{0,2}(?:照片|视频|相片|图片)?的?(轮播|轮流播放|自动(播放|轮播)).{0,1}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)(照片|视频|相片|图片)?(轮播|轮流播放|自动(播放|轮播))(暂停|停[止掉]?|关[掉闭了]|取消|不要|结束|退出)[一下]{0,2}.{0,1}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+
+			<!-- 否定句 -->
+			<rule><![CDATA[  (?<act>.*?)(轮播|轮流播放|自动(播放|轮播)) ]]></rule>			
+			<validator group="act" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="rephotograph">
+			<rule><![CDATA[  (?<who>.*?)(重新?)[来拍照]多?([一几]?[张个]).{0,5}$  ]]></rule>  <!-- 有多字 -->
+			<rule><![CDATA[  (?<who>.*?)(重新?)[来拍照]([一几]?[张个]?).{0,5}$  ]]></rule>  <!-- 没有多字 -->
+			
+			<rule><![CDATA[  ^.{0,1}(重新)(给我)?再?[来拍照]多?([一几]?[张个]).{0,5}$  ]]></rule>  <!-- 有多字 -->
+			<rule><![CDATA[  ^.{0,1}(重新)(给我)?再?[拍照]([一几]?[张个]?).{0,5}$  ]]></rule>  <!-- 没有多字 -->
+			
+			
+			<rule><![CDATA[  ^.{0,1}(重新)再?(给我)?[来拍照]多?([一几]?[张个]).{0,5}$  ]]></rule>  <!-- 有多字 -->
+			<rule><![CDATA[  ^.{0,1}(重新)再?(给我)?[拍照]([一几]?[张个]?).{0,5}$  ]]></rule>  <!-- 没有多字 -->
+			
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="photograph_again">
+			<rule><![CDATA[  (?<who>.*?)(再来?)[来拍照]多?([一几]?[张个]).{0,5}$  ]]></rule>  <!-- 有多字 -->
+			<rule><![CDATA[  (?<who>.*?)(再来?)[来拍照]([一几]?[张个]?).{0,5}$  ]]></rule>  <!-- 没有多字 -->
+			
+			<rule><![CDATA[  ^(再来?)(?<who>.*?)[来拍照]多?([一几]?[张个]).{0,5}$  ]]></rule>  <!-- 有多字 -->
+			<rule><![CDATA[  ^(再来?)(?<who>.*?)[来拍照]([一几]?[张个]?).{0,5}$  ]]></rule>  <!-- 没有多字 -->
+			
+			
+			<rule><![CDATA[  (?<who>.*?)[来拍照]多([一几]?[张个]).{0,5}$  ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)还要(继续|接着)?([拍|照]照?).{0,5}$   ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)还要(继续|接着)?[拍|照]多?([一几]?张)照?.{0,5}$   ]]></rule>
+			
+			<rule><![CDATA[  (?<who>.*?)继续([拍|照]照?|照).{0,5}$   ]]></rule>
+			<rule><![CDATA[  (?<who>.*?)继续[拍|照]多?([一几]?张)照?.{0,5}$   ]]></rule>
+			<rule><![CDATA[  ^.{0,1}继续(?<who>.*?)([拍|照]照?).{0,5}$   ]]></rule>
+			<rule><![CDATA[  ^.{0,1}继续(?<who>.*?)[拍|照]多?([一几]?张照?).{0,5}$   ]]></rule>
+			
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		
+		<rules action="photograph">
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一几]?[下个张些]?)?.{0,5}照片?|(来|过来)?照[一几些]?[下个张]?.{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十][下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十][下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十几]十[下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十几]十[下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   来?(?<who>.*?)((来|过来)?拍([一二两三四五六七八九十几]十[一二两三四五六七八九十][下个张些])?.{0,5}照片?|(来|过来)?照[一二两三四五六七八九十几]十[一二两三四五六七八九十][下个张些].{0,5}相片?|打开相机|相机|(来[一几]?[张个])?.{0,5}自拍).{0,2}$  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)把相机打开  ]]></rule>
+			
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?世界上?最(美貌?|美|棒|正点?|帅|可爱|牛逼?|好看|漂亮|酷|厉害|屌丝?|有钱|富裕?|懒|邋遢)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?世界上?(身材|样子|相貌|外貌)最(美|棒|正点?|好看?|漂亮)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?(成[绩就])最(高|好|棒|牛|厉害|屌)的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?([未将]来的?|以后的?)(大?明星|科学家|中国首富).{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是(这个?)?(世界上?)?([未将]来的?|以后的?)会?((改变|征服)(世界|地球|宇宙))的(女|男)?人.{0,2}$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)隔壁老王是谁$   ]]></rule>
+			<rule><![CDATA[   (?<what>.{0,6}?)谁才?是隔壁老王$   ]]></rule>
+			<validator group="what" name="negativeValidator" return="false" />
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="search_date_before" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天]前.{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   看?(?<month>\d+)月?(?<day>\d+)[日号天]前.{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+		</rules>
+		
+		<rules action="search_date_after" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   看?(最近)(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天].{0,3}(照片|视频|相册|相片|图片)     ]]></rule>
+			<rule><![CDATA[   看?(最近)(?<month>\d+)月?(?<day>\d+)[日号天].{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			
+			<rule><![CDATA[   看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号天]后.{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   看?(?<month>\d+)月?(?<day>\d+)[日号天]后.{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+		</rules>
+		
+		<rules action="search_date" return_group="year,month,day">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   看?(?<year>\d+)年(?<month>\d+)月?(?<day>\d+)[日号].{0,3}(照片|视频|相册|相片|图片)    ]]></rule>
+			<rule><![CDATA[   看?(?<month>\d+)月?(?<day>\d+)[日号].{0,3}(照片|视频|相册|相片|图片)  ]]></rule>
+			<filter name="datetime2number"/>
+		</rules>
+	</domain>
+	
+	
+	<domain name="gallery" type="internal">
+		<rules action="media_back" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ([后快倒回]退|退后)((?<hour>\d+)小?时)((?<minute>\d+)分钟?)*((?<second>\d+)秒)*(?!(到|至))     ]]></rule>
+			<rule><![CDATA[   ([后快倒回]退|退后)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)((?<second>\d+)秒)*(?!(到|至))     ]]></rule>	
+			<rule><![CDATA[   ([后快倒回]退|退后)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)(?!(到|至))     ]]></rule>	
+			<filter name="datetime2number"/>
+		</rules>	
+		
+		<rules action="media_next" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule ref="media_next.rule" />
+		</rules>
+
+		<rules action="media_prev" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule ref="media_prev.rule" />
+		</rules>
+
+		<rules action="media_play" depend="gallery.view" priority="7">
+			<rule ref="replace_statement_rule" />
+			<rule ref="media_play_last.rule"/>
+			<rule ref="media_play_find.rule" />
+			<rule ref="media_play_match.rule"/>
+		</rules>
+
+		<rules action="media_stop" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule ref="media_stop.rule" />
+			<rule><![CDATA[   (?<who>.*?)(先|稍[微为]?)?(停止?|暂停|等)(下|一下)?$    ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)先?(?<how>.*?)播放?$    ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="how" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="media_forward" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   [前快]进((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)*(?!(到|至))    ]]></rule>
+			<rule><![CDATA[   [往向][前]快?进?((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)*(?!(到|至))    ]]></rule>	
+			<filter name="datetime2number"/>
+		</rules>
+
+		<rules action="media_to_last" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (到|至)(最后|结束|末尾|后面|倒数)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)*    ]]></rule>	
+			<filter name="datetime2number"/>
+			<filter name="discardNegativeInput" />
+		</rules>
+		<rules action="media_to_last" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (到|至)(最后|结束|末尾).{0,2}$    ]]></rule>	
+			<filter name="datetime2number"/>
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="media_forward_to" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   [前快]进(到|至)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)*    ]]></rule>
+			<rule><![CDATA[   播放(到|至)?(((?<hour>\d+)小?时)|((?<minute>\d+)分钟?)|((?<second>\d+)秒)){1,3}    ]]></rule>		
+			<filter name="datetime2number"/>
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="media_to_begin" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   (到|至)[一最]?(?:开始|开头|初始|先)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)*    ]]></rule>		
+			<filter name="datetime2number"/>
+		</rules>
+		
+		<rules action="media_back_to" return_group="hour,minute,second" depend="gallery.view" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   [后快倒回]?[退回](回|到|至)((?<hour>\d+)小?时)((?<minute>\d+)分钟?)*((?<second>\d+)秒)*    ]]></rule>
+			<rule><![CDATA[   [后快倒回]?[退回](回|到|至)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)((?<second>\d+)秒)*    ]]></rule>	
+			<rule><![CDATA[   [后快倒回]?[退回](回|到|至)((?<hour>\d+)小?时)*((?<minute>\d+)分钟?)*((?<second>\d+)秒)    ]]></rule>		
+			<filter name="datetime2number"/>	
+		</rules>
+	</domain>
+</nlu>

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<!-- system priority默认是9，作为单轮，系统domain放在最后面匹配 -->
+	<domain name="system" type="external" priority="8">
+
+		<rules action="show_playui">
+			<rule ref="replace_statement_rule" />
+			<rule ref="show.playui_rule" />
+		</rules>
+ 
+		<rules action="update_check">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[(?<who>.*?)(检查|查看)(系统)?(更新|升级包?)]]></rule>
+			<rule><![CDATA[(检查|查看)?(系统)?有(更新|升级包?)[了啦]?[吗|没]]]></rule>
+			<rule><![CDATA[(检查|查看)?(系统)?有没有(更新|升级包?)]]></rule>
+			<rule><![CDATA[(检查|查看)?(系统)?有没有(更新|升级包?)]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="config">
+			<rule ref="replace_statement_rule" />
+			<rule ref="config.rule" />
+		</rules>
+
+		<rules action="projection_close" >
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[(?<who>.*?)(结束|终止|取消|关[闭掉了上]|退出|停止|断[开掉了])(镜像|投[屏影射]|映射)]]></rule>
+			<rule><![CDATA[(?<who>.*?)(镜像|投[屏影射]|映射)(结束|终止|取消|关[闭掉了上]|断[开掉了]|退出|停止)]]></rule>
+			<rule><![CDATA[  我?不想?要?(镜像|投[屏影射]|映射)]]></rule>
+			
+			<rule><![CDATA[(?<who>.*?)把(镜像|投[屏影射]|映射)(结束|终止|取消|关[闭掉了上]?|断[开掉了]|退出|停止)]]></rule>
+			
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="projection_open" priority="20">
+		
+			<rule><![CDATA[(?<who>.*?)(打开)?(电视|屏幕)(镜像|投[屏影射]|映射)$ ]]></rule>
+		
+			<rule><![CDATA[(?<who>.*?)(打开)?(镜像|投[屏影射]|映射)$ ]]></rule>			
+			
+			<rule><![CDATA[(?<who>.*?)把.{0,6}(镜像|投[屏影射]?|映射)(至|到).{0,3}(电视|屏幕).{0,3}]]></rule>
+			
+			<rule><![CDATA[(?<who>.*?)(镜像|投[屏影射]?|映射)(至|到).{0,3}(电视|屏幕).{0,3}]]></rule>
+			<rule><![CDATA[(?<who>.*?)(镜像|投[屏影射]|映射)(电视|屏幕)$ ]]></rule>
+			<rule><![CDATA[(?<who>.*?)(连接).{0,3}(电视果)$ ]]></rule>
+			<rule><![CDATA[   ^电视果$ ]]></rule>
+						
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<rules action="feedback">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^(意见|建议|错误|问题)反馈$ ]]></rule>
+			<rule><![CDATA[ ^我[想]?要反馈$ ]]></rule>
+			<rule><![CDATA[ (?<who>.*?)(反馈|提|报)(意见|错误?|反馈|建议|问题) ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="voice_history">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)语音报错 ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="install_yes">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^(现在|立刻|马上|立即)?(给我)?安?装$ ]]> </rule>
+			<rule><![CDATA[ ^(现在|立刻|马上|立即)?(给我)?更新$ ]]> </rule>
+			
+			<rule><![CDATA[ ^(给我)?(现在|立刻|马上|立即)?安?装$ ]]> </rule>
+			<rule><![CDATA[ ^(给我)?(现在|立刻|马上|立即)?更新$ ]]> </rule>
+		</rules>
+		
+		<rules action="install_no">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^我?不(想|要|打算|准备)?安?装了?$  ]]></rule>
+			<rule><![CDATA[ ^我?不(想|要|打算|准备)?更新$ ]]> </rule>
+			<rule><![CDATA[ ^别(给我)?更新$ ]]> </rule>
+			<rule><![CDATA[ ^忽略更新$ ]]> </rule>
+			<rule><![CDATA[ ^别安?装了?$  ]]></rule>
+		</rules>
+		
+		
+		<rules action="ignore">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^忽略$  ]]></rule>
+			<rule><![CDATA[ ^稍后再说$  ]]></rule>
+		</rules>
+		
+		<!-- confirm相关的yes, no只用在家庭圈申请 -->
+		<rules action="confirm_yes">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^(同意|允许|批准)(加入|申请)?$  ]]></rule>
+			<rule><![CDATA[ ^(申请通过|可以加入)$  ]]></rule>
+			<rule><![CDATA[ ^通过请求$  ]]></rule>
+			<rule><![CDATA[ ^(可以|把[它他她]|同意|允许)?加进来$  ]]></rule>
+		</rules>
+		
+		<rules action="confirm_no">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^(拒绝|忽略|不同意)(请求|加入)$  ]]></rule>
+			<rule><![CDATA[ ^(请求忽略)$  ]]></rule>
+			<rule><![CDATA[ ^申请(不要?|别)通过$  ]]></rule>
+			
+			<rule><![CDATA[ ^(?<how>.{0,4}?)(同意|允许|批准)(加入|申请)?$  ]]></rule>
+			<rule><![CDATA[ ^(?<how>.{0,4}?)(可以加入)$  ]]></rule>
+			<rule><![CDATA[ ^(?<how>.{0,4}?)通过(请求)?$  ]]></rule>
+			<rule><![CDATA[ ^(?<how>.{0,4}?)(可以|把[它他她]|同意|允许)?加进来$  ]]></rule>
+			<validator group="how" name="negativeValidator" return="true" />
+		</rules>
+		
+		<rules action="open_keyboard">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.{0,5}?)打开一?下?(我的)?[拨拔]号键盘([界页]面)?$]]></rule>
+			<rule><![CDATA[ (?<who>.{0,5}?)打开一?下?(我的)?[拨拔]号([界页]面)$]]></rule>
+			<rule><![CDATA[ (?<who>.{0,5}?)(我的)?(电话)?[拨拔]号键盘([界页]面)?$]]></rule>
+			<rule><![CDATA[ (?<who>.{0,5}?)(我的)?(电话)?[拨拔]号([界页]面)$]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="skill_lookup">
+		<!-- 
+			<rule ref="replace_statement_rule" />
+		 -->
+			<rule><![CDATA[ (你|您)都?(会|能|可以)[干做作]些?(什么|啥|嘛)(事情?|东[西东]|[玩网]易儿?)?呢?  ]]></rule>
+			<!-- 有 -->
+			<rule><![CDATA[ (你|您)都?(有)些?(什么|啥)(本[领事]|能力|技[能术]|东[西东]|功能|[玩网]易儿?)?呢?$  ]]></rule>
+			
+			<!-- 会|懂 -->
+			<rule><![CDATA[ (你|您)都?(会|懂)些?(什么|啥)(事情?|本[领事]|能力|技[能术]|东[西东]|功能|[玩网]易儿?)?呢?$  ]]></rule>
+			
+			<!-- 知道 -->
+			<rule><![CDATA[ (你|您)都?(知道)些?(什么|啥)(事情?|料|东[西东]|[玩网]易儿?)?呢?$  ]]></rule>
+			<!-- 
+			<rule><![CDATA[ (你|您)都?(有|会|懂|知道)些?(什么|啥)(事情?|料|本[领事]|能力|技[能术]|东[西东]|啥(功能)?|功能)呢?$  ]]></rule>
+			 -->
+			
+			<rule><![CDATA[ (你|您)的?(本[领事]|能力|技[能术]|功能)是(啥|什么)(东[西东])?$  ]]></rule>
+			
+			<rule><![CDATA[ ^(?<who>.*?)(打开|进入|开启|启动)我的技能.{0,4}$  ]]></rule>
+			<rule><![CDATA[ ^我的技能.{0,2}$  ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<!--  ============================== 开关机 ============================== -->
+		<!-- 
+		<rules action="power_on">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)开机$]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		 -->
+		 
+		<rules action="power_off">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)关机$]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+			<validator group="*" name="powerOffDomainActionValidator" return="true" />
+		</rules>
+
+	</domain>
+	
+	<domain name="system" type="internal" priority="10">
+	
+		<rules action="choice" priority="11">
+			<rule ref="cmd_choise_match_rule"/>
+			<rule ref="cmd_choise_find_rule"/>
+			<filter name="discardNegativeInput" />					
+		</rules>
+		
+		<rules action="cancel">
+			<rule ref="replace_statement_rule" />
+			<rule ref="cmd.cancel_rule" />
+		</rules>
+		
+		<rules action="feedback_send" depend="system.feedback">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)发送 ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<!-- 
+		<rules action="exit">
+			<rule ref="replace_statement_rule" />
+			<rule ref="cmd.exit_rule" />
+		</rules>
+		
+		<rules action="back">
+			<rule ref="replace_statement_rule" />
+			<rule ref="cmd.back_rule" />
+		</rules>
+		 
+
+		<rules action="home">
+			<rule ref="replace_statement_rule" />
+			<rule ref="cmd.home_rule" />
+		</rules>
+		-->
+	
+		<rules action="next">
+			<rule ref="replace_statement_rule" />
+			<rule ref="next.rule" />
+		</rules>
+
+		<rules action="prev">
+			<rule ref="replace_statement_rule" />
+			<rule ref="prev.rule" />
+		</rules>
+		
+		<!--  -->
+		<rules action="prev" depend="gallery.view"  priority="5">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)(继续|接着)?(打开|查?看|播放|[翻返]回|回到?)一?下?[上前]一[个条张段](照片|视频|相册|相片|图片)?$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?[上前]一[个张条]$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?切回([上前]一[个张条]|去)$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?回([上前]一[个张条])$ ]]> </rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="next" depend="gallery.view"  priority="5">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)(继续|接着)?(打开|查?看|播放)一?下?[下后]一[个条张段](照片|视频|相册|相片|图片)?$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?[下后]一[个张条]$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?(切换?到?|换成?|翻到?)([下后]一[个张条段])(照片|视频|相册|相片|图片)?$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?换([下后]一[个张条])$ ]]> </rule>
+			<rule><![CDATA[ ^(继续|接着)?换$ ]]> </rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+
+		<!-- 重拨 -->		
+		<rules action="redial" depend="system.call_failed" priority="8">
+			<rule><![CDATA[  (?<who>.{0,7}?)继续$  ]]></rule>		
+			<rule><![CDATA[  (?<who>.{0,7}?)(重新?|再次?|还)(拨|打|连接?|呼叫?)(一[次下])?.{0,5}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.{0,7}?)(继续|一直|接着)(拨|打|连接?|呼叫?)(一[次下])?.{0,5}$  ]]></rule>
+			<rule><![CDATA[  (?<who>.{0,7}?)[拨打呼]通为止  ]]></rule>			
+			
+			<!-- 再给XX打 -->
+			 <rule><![CDATA[  (?<who>.{0,7}?)(重新?|再次?|继续|一直|接着|还)(给)(?<how>.{0,5}?)(拨|打|连接?|呼叫?)(视频|语音|电话)?.{0,2}$  ]]></rule>
+			
+			<!-- 再给邀请XX打?视频电话 --> 
+			 <rule><![CDATA[  (?<who>.{0,7}?)(重新?|再次?|继续|一直|接着|还)邀?请(?<how>.{0,5}?)(拨|打|连接?|呼叫?)?(视频|语音|电话).{0,2}$  ]]></rule>
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="hd_mode">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^高清(模式)?$ ]]> </rule>
+			<rule><![CDATA[(?<who>.*?)(切换|[改变换]成)高清模式$ ]]></rule>
+			<rule><![CDATA[(?<who>.*?)(切换|转换|调整?)[到至]高清模式$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="sd_mode">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ ^[流畅|标清](模式)?$  ]]> </rule>
+			<rule><![CDATA[(?<who>.*?)(切换|[改变换]成)[流畅|标清]模式$ ]]></rule>
+			<rule><![CDATA[(?<who>.*?)(切换|转换|调整?)[到至][流畅|标清]模式$ ]]></rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="resolution_up">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)(清晰度|分辨率)(高|清晰?)一?点儿?$ ]]> </rule>
+			<rule><![CDATA[ (?<who>.*?)调清[晰楚]?一?[点些] ]]> </rule>
+			<rule><![CDATA[ (?<who>.*?)清[晰楚]一?[点些] ]]> </rule>
+			<rule><![CDATA[ (?<who>.*?)高清一?[点些] ]]> </rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<rules action="resolution_down">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[ (?<who>.*?)(清晰度|分辨率)[低差]一?点儿?$ ]]> </rule>
+			<validator group="who" name="IWantValidator" return="true" />
+		</rules>
+		
+		<!-- 放在voice相关的上面 -->
+		<rules action="voice_mute_on" >
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.voice_mute_on" />
+		</rules>
+		
+		<rules action="voice_mute_off" >
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.voice_mute_off" />
+		</rules>
+
+		<rules action="voice_up">
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.up_rule" />
+		</rules>
+
+		<rules action="voice_down">
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.down_rule" />
+		</rules>
+
+		<rules action="voice_max">
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.max_rule" />
+		</rules>
+
+		<rules action="voice_min">
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.min_rule" />
+		</rules>
+		
+		<rules action="voice_to">
+			<rule ref="replace_middle_text_to_num_rule"/>
+			<rule ref="replace_statement_rule" />
+			<rule ref="voice.voice_to_rule" />
+		</rules>
+	</domain>
+</nlu>

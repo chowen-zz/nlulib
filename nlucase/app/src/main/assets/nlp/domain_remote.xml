@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nlu>
+	<domain name="remote" type="external">
+	
+		<rules action="call_keeper" priority="9">
+			<rule><![CDATA[  ^在线管家$ ]]></rule>
+			<rule><![CDATA[  (呼叫|拨打|连接|接通)(在线管家) ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:打|给|拨)[一个通下]{0,3}(?:电话|视频)给在线管家   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:给|跟|和|与|同)在线管家(?:拨|拨打|打)[一个通下]{0,3}(?:电话|视频|语音|话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:跟|和|与|同)在线管家(?:打|进行)[一个通下]{0,3}(?:电话|视频|语音|话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:跟|和|与|同)在线管家(?:视频|语音|通话)  ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|拨|打(?!听)|打给|接通).*?(?:一?[下个通]|电话)?在线管家的?(?:电话|视频)   ]]></rule>
+			<rule><![CDATA[   (?<who>.*?)(?:呼叫|拨打|打给|接通|拨).*?(?:一?[下个通]|电话)?给?在线管家   ]]></rule>
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="cancelExitStopValidator" return="false" />
+			<validator group="who" name="questionValidator" return="false" />	
+		</rules>
+		
+		<rules action="disconnect_keeper">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?<who>.{0,6}?)(断开|中断|挂断|结束|退出|中止|断掉)远程(连接|协助|遥控)?$   ]]></rule>
+			<rule><![CDATA[   ^(?<who>.{0,6}?)(断开|中断|挂断|结束|退出|中止|断掉)(在线管家|连接)$   ]]></rule>
+			<validator group="who" name="negativeValidator" return="false" />
+			<validator group="who" name="delayValidator" return="false" />
+			<validator group="who" name="questionValidator" return="false" />	
+		</rules>
+		
+	</domain>
+	
+	<domain name="remote" type="internal">
+	
+		<rules action="reject" depend="remote.called" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[   ^(?:挂断|挂掉|拒掉|拒接|拒绝|拒听)(远程)?$  ]]></rule>
+			<rule><![CDATA[   ^(不|取消)接听(远程)?$  ]]></rule>
+			<rule><![CDATA[   ^(?:不[想要]?[接听])(远程)?$  ]]></rule>
+		</rules>
+		
+		<rules action="accept" depend="remote.called" priority="9">
+			<rule><![CDATA[   ^接(?:通|一?下|听|受|收)?(?:远程)?   ]]></rule>
+			<rule><![CDATA[   ^(好|是|可以|Yes|YES|yes|连接?[上一下吧]{0,1})$ ]]></rule>
+			<rule><![CDATA[   ^(同意|马上|现在|立刻)?(给我)?连接(?:远程)?$ ]]></rule>
+			<rule ref="replace_statement_rule" />
+			<filter name="discardNegativeInput" />
+		</rules>
+		
+		<rules action="cancel" depend="remote.calling" priority="9">
+			<rule ref="replace_statement_rule" />
+			<rule><![CDATA[  ^.{0,2}[挂停][断|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  ^.{0,2}断[开|掉](远程)?$  ]]></rule>
+			<rule><![CDATA[  ^.{0,2}(结束|停[止了掉]|退出)(通话|视频|远程)$  ]]></rule>
+			<rule><![CDATA[  ^.{0,2}[关挂][了|掉]$  ]]></rule>	
+			<rule><![CDATA[  ^.{0,2}中断$  ]]></rule>
+			<rule> <![CDATA[ ^(再见|拜拜)[了啦]?$  ]]></rule>
+			<rule> <![CDATA[ ^取消$  ]]></rule>			
+			<filter name="discardNegativeInput" />
+		</rules>
+
+	</domain>
+</nlu>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="info.debatty:java-string-similarity:1.0.0@jar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/info.debatty/java-string-similarity/1.0.0/d1102a814bc49803306c0cbad5f6c206fd24b9d/java-string-similarity-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/info.debatty/java-string-similarity/1.0.0/c400a9ccedfce4c11b52e3a00b38cb19512aeca/java-string-similarity-1.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
