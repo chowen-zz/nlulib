@@ -153,15 +153,14 @@ rules分成两类，一个是全局的rules，一个是在domain里面的 rules�
 ```
 #### 2.4.1  attribute
 
-| Attribute Name |  value  | default  | note｜
+| Attribute Name |  value  | default  | note |
 | :--- | :--- | :---| :---|
-| name  | String |    全局的rules必须要显式指定一个name的属性。在domain里面嵌套的name由系统定义，通常为domainName.actionName
-action  String  空  全局的rules无需指定action属性，而在domain里面的rules，则需要指定一个action属性。
-match  true/false  false  为true时，完全匹配整个字符串，false的时候只需匹配子串
-confirm  True/false  False  用于标识是否是一个回复，实质上并不需要用到也可以
-return_group  String  空  指出在正则表达式中用于返回的组的名字，支持返回多个字段
-return_key  String  空  指出本规则返回上层的key，如果没有配置，则会使用return_group做为返回上层的key，如果也没有配置return_group，则不会返回任何key和value，只会返回是否匹配的一个布尔值（比较少用，可能会有bug）
-replacement  String  空  replacement为空的时候，正则表达式用于匹配规则，当replacement不为空，即有配置这一属性（包括replacement=””）时，正则表达式的规则用于替换字符串，这时主要用于对规则校验之前的字符串进行预处理
+| name  | String | 全局的rules必须要显式指定一个name的属性。在domain里面嵌套的name由系统定义，通常为domainName.actionName |
+| action  | String  |空  |全局的rules无需指定action属性，而在domain里面的rules，则需要指定一个action属性。|
+|match | true/false | false  |为true时，完全匹配整个字符串，false的时候只需匹配子串|
+|return_group | String | 空  | 指出在正则表达式中用于返回的组的名字，支持返回多个字段|
+|return_key | String | 空 | 指出本规则返回上层的key，如果没有配置，则会使用return_group做为返回上层的key，如果也没有配置return_group，则不会返回任何key和value，只会返回是否匹配的一个布尔值（比较少用，可能会有bug）|
+|replacement | String  | 空 | replacement为空的时候，正则表达式用于匹配规则，当replacement不为空，即有配置这一属性（包括replacement=””）时，正则表达式的规则用于替换字符串，这时主要用于对规则校验之前的字符串进行预处理|
 
 #### 2.4.2  property
 
@@ -169,17 +168,15 @@ replacement  String  空  replacement为空的时候，正则表达式用于匹�
 | :--- | :--- |:--- |:--- |
 |rule  | String | NOT null | rule定义一个正则表达式的规则，可是一个纯字符串，也可以是一个正则表达式，使用正则表达式的时候，尽量采用CDATA标签|
 | filter  | String  | NOT null  | 声明一个过滤器，对经过当前<rules>的所有规则的输入进行处理，filter标签的attribute如下定义：
-
 name： 用于指定一个filter的name，声明是调用哪一个filter，具体的filter在<filters>标签会有预定义，引用一个不存的filter name，会抛出一个异常。
-
-cascade:  是一个boolean的值，默认为false，为 true时，说明当前filter也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
+cascade: 是一个boolean的值，默认为false，为 true时，说明当前filter也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
 | validator |  String  | NOT null | 声明一个校验器，对正则表达式处理完的结果，进行校验。相关的attribute如下定义：
 name:   用于指定一个validator的name，声明是调用哪一个validator，具体的validator在<validators>中定义。引用一个不存在的validator，无法抛出一个异常。
 return:   声明validator的返回值，即只有当validator返回return中声明的值的时候，检验通过。目前的类型是true/false
 group:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要校验哪一个组的值，当group配置的值为*的时候，说明校验整个匹配的字符子串。
 cascade:   是一个boolean的值，默认为false，为 true时，说明当前validator也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
 
-| result_handler | String  | Not null | 声明一个结果处理器，结果处理器用于处理正则表达式的结果，即如果匹配的结果需要做一些特殊处理的时候，配置一个result_handler即可
+| result_handler | String | Not null | 声明一个结果处理器，结果处理器用于处理正则表达式的结果，即如果匹配的结果需要做一些特殊处理的时候，配置一个result_handler即可
 相关的result_handler的attribute如下定义：
 name:   用于指定一个result_handler的name，声明是调用哪一个result handler，具体的handler在<result_handlers>中定义。引用一个不存在的result_handler，无法抛出一个异常。
 group:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要对哪一个组的值进行特珠处理后再返回，当group配置的值为*的时候，说明校验整个匹配的字符子串。
