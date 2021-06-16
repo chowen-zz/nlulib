@@ -167,20 +167,9 @@ rules分成两类，一个是全局的rules，一个是在domain里面的 rules�
 | Property Name | value  |default | note |
 | :--- | :--- |:--- |:--- |
 |rule  | String | NOT null | rule定义一个正则表达式的规则，可是一个纯字符串，也可以是一个正则表达式，使用正则表达式的时候，尽量采用CDATA标签|
-| filter  | String  | NOT null  | 声明一个过滤器，对经过当前<rules>的所有规则的输入进行处理，filter标签的attribute如下定义：
-name： 用于指定一个filter的name，声明是调用哪一个filter，具体的filter在<filters>标签会有预定义，引用一个不存的filter name，会抛出一个异常。
-cascade: 是一个boolean的值，默认为false，为 true时，说明当前filter也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
-| validator |  String  | NOT null | 声明一个校验器，对正则表达式处理完的结果，进行校验。相关的attribute如下定义：
-name:   用于指定一个validator的name，声明是调用哪一个validator，具体的validator在<validators>中定义。引用一个不存在的validator，无法抛出一个异常。
-return:   声明validator的返回值，即只有当validator返回return中声明的值的时候，检验通过。目前的类型是true/false
-group:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要校验哪一个组的值，当group配置的值为*的时候，说明校验整个匹配的字符子串。
-cascade:   是一个boolean的值，默认为false，为 true时，说明当前validator也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
-
-| result_handler | String | Not null | 声明一个结果处理器，结果处理器用于处理正则表达式的结果，即如果匹配的结果需要做一些特殊处理的时候，配置一个result_handler即可
-相关的result_handler的attribute如下定义：
-name:   用于指定一个result_handler的name，声明是调用哪一个result handler，具体的handler在<result_handlers>中定义。引用一个不存在的result_handler，无法抛出一个异常。
-group:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要对哪一个组的值进行特珠处理后再返回，当group配置的值为*的时候，说明校验整个匹配的字符子串。
-cascade:   是一个boolean的值，默认为false，为 true时，说明当前result_handler定义的handler也会用在在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
+| filter  | String  | NOT null  | 声明一个过滤器，对经过当前<rules>的所有规则的输入进行处理，filter标签的attribute如下定义：name： 用于指定一个filter的name，声明是调用哪一个filter，具体的filter在<filters>标签会有预定义，引用一个不存的filter name，会抛出一个异常。cascade: 是一个boolean的值，默认为false，为 true时，说明当前filter也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
+| validator |  String  | NOT null | 声明一个校验器，对正则表达式处理完的结果，进行校验。相关的attribute如下定义：name:   用于指定一个validator的name，声明是调用哪一个validator，具体的validator在<validators>中定义。引用一个不存在的validator，无法抛出一个异常。return:   声明validator的返回值，即只有当validator返回return中声明的值的时候，检验通过。目前的类型是true/falsegroup:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要校验哪一个组的值，当group配置的值为*的时候，说明校验整个匹配的字符子串。cascade:   是一个boolean的值，默认为false，为 true时，说明当前validator也会定义在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
+| result_handler | String | Not null | 声明一个结果处理器，结果处理器用于处理正则表达式的结果，即如果匹配的结果需要做一些特殊处理的时候，配置一个result_handler即可相关的result_handler的attribute如下定义：name: 用于指定一个result_handler的name，声明是调用哪一个result handler，具体的handler在<result_handlers>中定义。引用一个不存在的result_handler，无法抛出一个异常。group:   正则表达式会把匹配的字符串归组成一个一个的组，而group则声明了需要对哪一个组的值进行特珠处理后再返回，当group配置的值为*的时候，说明校验整个匹配的字符子串。cascade:   是一个boolean的值，默认为false，为 true时，说明当前result_handler定义的handler也会用在在<rule ref=”ref_rule_name/>标签中引用的ref_rule_name的规则中去。|
 
 ### 2.5  <domain>
 domain主要是由name attribute和rules elements组成
